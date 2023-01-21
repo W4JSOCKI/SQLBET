@@ -9,15 +9,17 @@ class Uzytkownik(db.Model,UserMixin):
     discriminator = db.Column('type', db.String(50))
     __mapper_args__ = {'polymorphic_on': discriminator}
 
+
 class Admin(Uzytkownik):
-    __mapper_args__ = {'polymorphic_identity': 'admin'}
     poziom = db.Column(db.Integer)
+    __mapper_args__ = {'polymorphic_identity': 'admin'}
 
 class Klient(Uzytkownik):
-    __mapper_args__ = {'polymorphic_identity': 'klient'}
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    id = db.Column(None, db.ForeignKey('uzytkownik.id_user'), primary_key=True)
     first_name = db.Column(db.String(150))
     last_name = db.Column(db.String(150))
+    __mapper_args__ = {'polymorphic_identity': 'klient'}
+
 
 class Kursy(db.Model):
     kurs = db.Column(db.Integer, primary_key=True)
@@ -31,7 +33,7 @@ class Mecz(db.Model):
     dr1 = db.Column(db.String(80))
     dr2 = db.Column(db.String(80))
     wynik_meczu = db.Column(db.String(1))
-    kurs = db.relationship('Kurs')
+    kurs = db.relationship('Kursy')
     zaklad = db.relationship('Zaklad')
 
 class Zaklad(db.Model):
