@@ -11,6 +11,7 @@ class Uzytkownik(db.Model,UserMixin):
 
 
 class Admin(Uzytkownik):
+    id = db.Column(None, db.ForeignKey('uzytkownik.id_user'), primary_key=True)
     poziom = db.Column(db.Integer)
     __mapper_args__ = {'polymorphic_identity': 'admin'}
 
