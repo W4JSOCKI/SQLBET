@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import Admin
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
+from sqlalchemy import select
 from flask_login import login_user, login_required, logout_user, current_user
 
 
@@ -23,7 +24,7 @@ def login():
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
-            flash('Email does not exist.', category='error')
+            flash('You are not an admin.', category='error')
 
     return render_template("login.html", user=current_user)
 
