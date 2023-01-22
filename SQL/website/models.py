@@ -1,5 +1,6 @@
 from . import db
 from flask_login import UserMixin
+from sqlalchemy.databases import oracle
 from sqlalchemy.sql import func
 
 class Uzytkownik(db.Model,UserMixin):

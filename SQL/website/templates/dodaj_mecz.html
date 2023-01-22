@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
+content %}
+
+    <style>
+    body {
+      background-color: darkgreen;
+      background-image: url('static/gre.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+    </style>
+
+<form method="POST">
+  <h3 align="center">Add Game</h3>
+  <div class="form-group">
+    <label for="date">Date</label>
+    <input
+      type="date"
+      class="form-control"
+      id="date"
+      name="date"
+      placeholder="Enter date"
+    />
+  </div>
+      <div class="form-group">
+    <label for="league">League</label>
+    <input
+      type="league"
+      class="form-control"
+      id="league"
+      name="league"
+      placeholder="League"
+    />
+  </div>
+
+  <br />
+  <button type="submit" class="btn btn-primary">Add Game</button>
+</form>
+{% endblock %}
