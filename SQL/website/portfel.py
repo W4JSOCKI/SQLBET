@@ -14,10 +14,9 @@ def home():
     #TODO - add button to add new wallet
     #TODO - take wallets from database
     sql = select(Portfel.id_portfela,Portfel.id_klienta,Portfel.stan).where(Portfel.id_klienta==current_user.id_user)
-    print(sql)
     conn = db.engine.connect()
     portfele = conn.execute(sql).fetchall()
-    print(portfele)
+
     button_tags=[]
     for i in range(1,len(portfele)+1):
         button_tags.append("Portfel"+str(i))

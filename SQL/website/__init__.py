@@ -15,11 +15,13 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    from .auth_admin import auth_admin
     from .portfel import portfel
 
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(auth_admin, url_prefix='/')
     app.register_blueprint(portfel, url_prefix='/')
 
     from .models import Uzytkownik,Kupon,Mecz,Zaklad,Kursy,Admin,Klient,Wplata,Wyplata,Portfel
