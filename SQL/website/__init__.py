@@ -17,7 +17,7 @@ def create_app():
     from .auth import auth
     from .auth_admin import auth_admin
     from .portfel import portfel
-    from .dodaj_admina import dod_admin
+    from .opcje_admina import dod_admin
 
 
     app.register_blueprint(views, url_prefix='/')
