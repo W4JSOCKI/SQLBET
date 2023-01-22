@@ -10,9 +10,10 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    if request.method == 'POST':
-        flash('Welcme to SQLBET!', category='success')
+    flash('Welcme to SQLBET!', category='success')
 
     return render_template("home.html", user=current_user)
 
-
+@views.route('/admin', methods=['GET', 'POST'])
+def home_admin():
+    return render_template("home_admin.html", user=current_user)
