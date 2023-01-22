@@ -2,21 +2,28 @@
 <link rel="stylesheet" href="static/index.css">
 <style>
 body {
-  background-color: darkgreen;
-  background-image: url('static/background.jpg');
+  background-color: withe;
+  background-image: url('static/adminhome.jpg');
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
 }
 </style>
 </head>
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
-<h1 align="center">,</h1>
-<div align="center">
-  <button type="button" class="block" onClick="window.location.href='/portfel'">Dodaj/Zmien Mecz</button>
-</div>
-<div align="center">
-  <button type="button" class="block" onClick="window.location.href='/mecze'">Doda/Zmian Admina</button>
+<div align="up">
+  <button type="button" class="button-85" onClick="window.location.href='/logout'">logout</button>
 </div>
 
-{% endblock %}
+<div align="center">
+  <button type="button" class="button-85" onClick="window.location.href='/dodmecz'">Dodaj Mecz</button>
+</div>
+<div align="center">
+  <button type="button" class="button-85" onClick="window.location.href='/zmmecz'">Edytuj Mecz</button>
+</div>
+<div align="center">
+  <button type="button" class="button-85" onClick="window.location.href='/dodadmin'">Dodaj Admina</button>
+</div>
+<div align="center">
+  <button type="button" class="button-85" onClick="window.location.href='/zmadmin'">Edytuj Admina</button>
+</div>
+

@@ -24,12 +24,12 @@ class Klient(Uzytkownik):
 
 class Kursy(db.Model):
     kurs = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.DateTime(timezone=True), default=func.now())
+    data = db.Column(db.Date, default=func.today())
     Mecz_id_meczu = db.Column(db.Integer, db.ForeignKey('mecz.id_meczu'))
 
 class Mecz(db.Model):
     id_meczu = db.Column(db.Integer, primary_key=True)
-    data_meczu = db.Column(db.DateTime(timezone=True), default=func.now())
+    data_meczu = db.Column(db.Date, default=func.today())
     liga = db.Column(db.String(100))
     dr1 = db.Column(db.String(80))
     dr2 = db.Column(db.String(80))
@@ -46,7 +46,7 @@ class Zaklad(db.Model):
 
 class Kupon(db.Model):
     id_kuponu = db.Column(db.Integer, primary_key=True)
-    data_zakonczenia = db.Column(db.DateTime)
+    data_zakonczenia = db.Column(db.Date, default=func.today())
     kwota = db.Column(db.Integer)
     kurs = db.Column(db.Float)
     potencjalna_wygrana = db.Column(db.Float)
@@ -63,7 +63,7 @@ class Portfel(db.Model):
 
 class Wplata(db.Model):
     id_wplaty = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.DateTime(timezone=True), default=func.now())
+    data = db.Column(db.Date, default=func.today())
     kwota = db.Column(db.Float)
     czy_z_kuponu = db.Column(db.String(1))
     Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela'))
@@ -71,7 +71,7 @@ class Wplata(db.Model):
 
 class Wyplata(db.Model):
     id_wypłaty = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.DateTime(timezone=True), default=func.now())
+    data = db.Column(db.Date, default=func.today())
     kwota = db.Column(db.Float)
     czy_z_kuponu = db.Column(db.String(1))
     Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela'))
