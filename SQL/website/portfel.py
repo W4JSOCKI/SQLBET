@@ -18,10 +18,11 @@ def home():
     conn = db.engine.connect()
     portfele = conn.execute(sql).fetchall()
     print(portfele)
-
-
+    button_tags=[]
+    for i in range(1,len(portfele)+1):
+        button_tags.append("Portfel"+str(i))
     #TODO - redirect to wallets after clicking on buttons
-    button_tags =["Portfel #1","Portfel #2","Portfel #3"]
+    #button_tags =["Portfel #1","Portfel #2"]
 
     return render_template("portfel.html", user=current_user,button_tags=button_tags)
 
