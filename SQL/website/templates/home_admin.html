@@ -1,3 +1,7 @@
+{% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
+content %}
+
+
 <head>
 <link rel="stylesheet" href="static/index.css">
 <style>
@@ -10,9 +14,8 @@ body {
 }
 </style>
 </head>
-<div align="up">
-  <button type="button" class="button-85" onClick="window.location.href='/logout'">logout</button>
-</div>
+<h1>        </h1>
+<h2>        </h2>
 
 <div align="center">
   <button type="button" class="button-85" onClick="window.location.href='/dodmecz'">Dodaj Mecz</button>
@@ -27,3 +30,4 @@ body {
   <button type="button" class="button-85" onClick="window.location.href='/zmadmin'">Edytuj Admina</button>
 </div>
 
+{% endblock %}
