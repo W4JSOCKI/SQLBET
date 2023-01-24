@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import Admin
 from werkzeug.security import generate_password_hash
 from . import db
-from SQL.files.Ligi_zespoly import *
+from files.Ligi_zespoly import *
 from flask_login import current_user
 
 
