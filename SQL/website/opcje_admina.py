@@ -62,5 +62,6 @@ def dodaj_mecz():
             print(data, liga, druzyna1, druzyna2)
             sql = insert(Mecz).values(data_meczu=datetime(int(data[0]),int(data[1]),int(data[2])), liga=liga, dr1=druzyna1,dr2=druzyna2)
             conn.execute(sql)
+            return redirect(url_for('views.home_admin'))
 
     return render_template("New_game.html", user=current_user,Ligi=Ligi)
