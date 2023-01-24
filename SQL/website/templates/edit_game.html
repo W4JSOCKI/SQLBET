@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
+content %}
+<style>
+    body {
+      background-color: white;
+      background-image: url('static/adminhome.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+  shadow {
+    text-shadow: 0px 0px 8px #FFFFFF;
+}
+
+
+</style>
+
+<form action = "/updateecz" method="POST">
+  <h1><shadow/><h1/>
+    <p>
+     <h1 align="center">Edit Game</h1>
+
+  <label>Select Game:</label>
+  <select id="league" name="game">
+    {% for league in Ligi %}
+    <option value="{{ league[0]}}">{{ league }}</option>
+    {% endfor %}
+  </select>
+        <input type="submit" value="Submit" >
+
+</form>
+
+
+{% endblock %}
