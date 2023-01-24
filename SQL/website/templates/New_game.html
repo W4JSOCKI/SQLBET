@@ -1,10 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
+content %}
 
-</body>
-</html>
+<form method="POST">
+
+     <h3 align="center">Add Game</h3>
+  <div class="form-group">
+       <h1 />
+    <label for="date">Date</label>
+    <input
+      type="date"
+      id="date"
+      name="date"
+      placeholder="Enter date"
+    />
+  </div>
+
+    <h1 />
+  <label>Select league:</label>
+  <select id="league" onchange="updateTeams()" name="liga">
+    {% for league in Ligi %}
+    <option value="{{ league }}">{{ league }}</option>
+    {% endfor %}
+  </select>
+  <br>
+
+        <h1 />
+  <label>Select team:</label>
+  <select id="team" name="druzyna1">
+    <option value="" disabled selected>Select a league first</option>
+  </select>
+
+        <h1 />
+      <label>Select second team:</label>
+  <select id="team2" name="druzyna2">
+    <option value="" disabled selected>Select a league first</option>
+  </select>
+    <input type="submit" value="Submit">
+</form>
+
+
+<script>
+  function updateTeams() {
+    var league = document.getElementById("league").value;
+    var teamList = document.getElementById("team");
+    teamList.innerHTML = "";
+    var teamList2 = document.getElementById("team2");
+    teamList2.innerHTML = "";
+    {% for league, teams in Ligi.items() %}
+    if (league == "{{ league }}") {
+      {% for team in teams %}
+      var option = document.createElement("option");
+      option.value = "{{ team }}";
+      option.text = "{{ team }}";
+      teamList.add(option);
+      {% endfor %}
+      {% for team2 in teams %}
+      var option = document.createElement("option");
+      option.value = "{{ team2 }}";
+      option.text = "{{ team2 }}";
+      teamList2.add(option);
+      {% endfor %}
+    }
+    {% endfor %}
+  }
+</script>
+
+{% endblock %}
