@@ -28,7 +28,7 @@
     <div class="container">
     <h1>{{pn}}</h1>
       <h1>Saldo: {{stan}}zł</h1>
-    <form onsubmit="submitForm(event)" action={{ptag}} method="POST">
+    <form  action={{ptag}} method="POST">
       <label>Wpłać:</label>
       <input type="number" name="deposit" min="0" max="10000" step="0.01">
       <br>

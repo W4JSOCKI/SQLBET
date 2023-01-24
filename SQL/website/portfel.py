@@ -1,13 +1,20 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify,redirect,url_for
 from flask_login import login_required, current_user
 from .models import Portfel, Wplata, Wyplata
-from sqlalchemy import select, update, insert, delete
+from sqlalchemy import select, update, insert, delete,event
 from . import db
 import json
 import numpy as np
 from datetime import date
 
+
+
 portfel = Blueprint('portfel', __name__)
+
+@event.listens_for(Portfel, "before_delete")
+def receive_before_delete(mapper, connection, target):
+    for child in target.children:
+        connection.delete(child)
 
 
 @portfel.route('/portfel', methods=['GET', 'POST'])
@@ -28,6 +35,45 @@ def home():
     #button_tags =["Portfel #1","Portfel #2"]
 
     return render_template("portfel.html", user=current_user,button_tags=button_tags,type=0)
+
+@portfel.route('/deletep', methods=['DELETE'])
+def deletep():
+    data = request.get_json()
+    record_id = int(data["id"])
+    userid=current_user.id_user
+    sql = select(Portfel.id_portfela).where(Portfel.id_klienta==userid).order_by(Portfel.id_portfela)
+    conn = db.engine.connect()
+    portfele = conn.execute(sql).fetchall()
+    port_id=portfele[1][0]
+    child_sql = delete(Wplata).where(Wplata.Portfel_id_portfela == port_id)
+    conn.execute(child_sql)
+    child_sql = delete(Wyplata).where(Wyplata.Portfel_id_portfela == port_id)
+    conn.execute(child_sql)
+   
+    
+    sql= (delete(Portfel).where(Portfel.id_portfela==port_id))
+    result = conn.execute(sql)
+
+
+    
+
+    return jsonify({"status": "ok"},200) 
+
+@portfel.route('/addp')
+def addp():
+    
+    userid=current_user.id_user
+    conn = db.engine.connect()
+    sql = select(Portfel.id_portfela).where(Portfel.id_klienta==userid).order_by(Portfel.id_portfela.desc())
+    portfele = conn.execute(sql).fetchall()
+    if(len(portfele)>=3):
+        flash("Nie możesz mieć więcej niż trzech portfeli", category="error") #TODO - flash nie działa
+        return redirect(url_for('portfel.home'))
+    
+    sql = insert(Portfel).values(id_klienta=userid,stan=0)
+    result = conn.execute(sql)
+    return redirect(url_for('portfel.home'))
+    
 
 @portfel.route('/portfel1', methods=['GET', 'POST'])
 @login_required
@@ -57,9 +103,9 @@ def portfel1():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+                sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success") 
         elif(len(deposit)>0):
@@ -67,7 +113,7 @@ def portfel1():
             sql =( update(Portfel).where(Portfel.id_portfela==portfele[0]).values(stan=stan))
             conn.execute(sql)
             today=date.today()
-            sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+            sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='N',data=today)
             conn.execute(sql)
             flash("Operacja zrealizowana pomyślnie", category="success")
         elif(len(payoff)>0):
@@ -78,7 +124,7 @@ def portfel1():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success")
         
@@ -126,9 +172,9 @@ def portfel2():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[1][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+                sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success") 
         elif(len(deposit)>0):
@@ -136,7 +182,7 @@ def portfel2():
             sql =( update(Portfel).where(Portfel.id_portfela==portfele[1][0]).values(stan=stan))
             conn.execute(sql)
             today=date.today()
-            sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+            sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
             conn.execute(sql)
             flash("Operacja zrealizowana pomyślnie", category="success")
         elif(len(payoff)>0):
@@ -147,7 +193,7 @@ def portfel2():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[1][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success")
         
@@ -196,9 +242,9 @@ def portfel3():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[2][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+                sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success") 
         elif(len(deposit)>0):
@@ -206,7 +252,7 @@ def portfel3():
             sql =( update(Portfel).where(Portfel.id_portfela==portfele[2][0]).values(stan=stan))
             conn.execute(sql)
             today=date.today()
-            sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+            sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
             conn.execute(sql)
             flash("Operacja zrealizowana pomyślnie", category="success")
         elif(len(payoff)>0):
@@ -217,7 +263,7 @@ def portfel3():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[2][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success")
         
