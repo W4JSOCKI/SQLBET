@@ -2,6 +2,7 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.databases import oracle
 from sqlalchemy.sql import func
+from sqlalchemy import event
 
 class Uzytkownik(db.Model,UserMixin):
     id_user = db.Column(db.Integer, primary_key=True)
@@ -61,15 +62,15 @@ class Portfel(db.Model):
     id_klienta = db.Column(db.Integer, nullable=False)
     stan = db.Column(db.Float, nullable=False)
     Klient_id_user = db.Column(db.Integer, db.ForeignKey('uzytkownik.id_user'))
-    wplata = db.relationship('Wplata', cascade="all, delete-orphan")
-    wyplata = db.relationship('Wyplata', cascade="all, delete-orphan")
+    wplata = db.relationship('Wplata',cascade="all, delete-orphan")
+    wyplata = db.relationship('Wyplata',cascade="all, delete-orphan")
 
 class Wplata(db.Model):
     id_wplaty = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Date, default=func.today(), nullable=False)
     kwota = db.Column(db.Float, nullable=False)
     czy_z_kuponu = db.Column(db.String(1), nullable=False)
-    Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela'))
+    Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela', ondelete='CASCADE'))
 
 
 class Wyplata(db.Model):
@@ -77,6 +78,10 @@ class Wyplata(db.Model):
     data = db.Column(db.Date, default=func.today(), nullable=False)
     kwota = db.Column(db.Float, nullable=False)
     czy_z_kuponu = db.Column(db.String(1), nullable=False)
-    Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela'))
+    Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela', ondelete='CASCADE'))
 
     
+@event.listens_for(Portfel, "before_delete")
+def receive_before_delete(mapper, connection, target):
+    for child in target.children:
+        connection.delete(child)

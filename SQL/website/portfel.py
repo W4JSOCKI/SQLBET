@@ -1,14 +1,20 @@
 from flask import Blueprint, render_template, request, flash, jsonify,redirect,url_for
 from flask_login import login_required, current_user
 from .models import Portfel, Wplata, Wyplata
-from sqlalchemy import select, update, insert, delete
+from sqlalchemy import select, update, insert, delete,event
 from . import db
 import json
 import numpy as np
 from datetime import date
 
 
+
 portfel = Blueprint('portfel', __name__)
+
+@event.listens_for(Portfel, "before_delete")
+def receive_before_delete(mapper, connection, target):
+    for child in target.children:
+        connection.delete(child)
 
 
 @portfel.route('/portfel', methods=['GET', 'POST'])
@@ -38,10 +44,17 @@ def deletep():
     sql = select(Portfel.id_portfela).where(Portfel.id_klienta==userid).order_by(Portfel.id_portfela)
     conn = db.engine.connect()
     portfele = conn.execute(sql).fetchall()
-    print(portfele)
     port_id=portfele[1][0]
+    child_sql = delete(Wplata).where(Wplata.Portfel_id_portfela == port_id)
+    conn.execute(child_sql)
+    child_sql = delete(Wyplata).where(Wyplata.Portfel_id_portfela == port_id)
+    conn.execute(child_sql)
+   
+    
     sql= (delete(Portfel).where(Portfel.id_portfela==port_id))
     result = conn.execute(sql)
+
+
     
 
     return jsonify({"status": "ok"},200) 
