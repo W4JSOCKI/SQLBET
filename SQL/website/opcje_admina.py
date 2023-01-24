@@ -49,14 +49,14 @@ def dodaj_mecz():
         druzyna2 = request.form.get('druzyna2')
         wynik = request.form.get('wynik')
 
-        if(druzyna2 == druzyna1):
+        if (data == None):
+            flash("You have to chose a date", category='error')
+        elif(druzyna1 == None or druzyna2 == None):
+            flash("You must select teams",category='error')
+        elif (druzyna2 == druzyna1) :
             flash("You can't have same teams against each other...", category = "error")
 
-        elif data == None:
-            flash("You have to chose a date", category='error')
         else:
-
-
 
             print(data, liga, druzyna1, druzyna2)
     return render_template("New_game.html", user=current_user,Ligi=Ligi)
