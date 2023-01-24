@@ -13,68 +13,68 @@ class Uzytkownik(db.Model,UserMixin):
 
 class Admin(Uzytkownik):
     id = db.Column(None, db.ForeignKey('uzytkownik.id_user'), primary_key=True)
-    poziom = db.Column(db.Integer)
+    poziom = db.Column(db.Integer, nullable=False)
     __mapper_args__ = {'polymorphic_identity': 'admin'}
 
 class Klient(Uzytkownik):
     id = db.Column(None, db.ForeignKey('uzytkownik.id_user'), primary_key=True)
-    first_name = db.Column(db.String(150))
-    last_name = db.Column(db.String(150))
+    first_name = db.Column(db.String(150), nullable=False)
+    last_name = db.Column(db.String(150), nullable=False)
     __mapper_args__ = {'polymorphic_identity': 'klient'}
 
 
 class Kursy(db.Model):
-    kurs = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Date, default=func.today())
-    Mecz_id_meczu = db.Column(db.Integer, db.ForeignKey('mecz.id_meczu'))
+    kurs = db.Column(db.Integer, primary_key=True, nullable=False)
+    data = db.Column(db.Date, default=func.today(), nullable=False)
+    Mecz_id_meczu = db.Column(db.Integer, db.ForeignKey('mecz.id_meczu'), nullable=False)
 
 class Mecz(db.Model):
     id_meczu = db.Column(db.Integer, primary_key=True)
-    data_meczu = db.Column(db.Date, default=func.today())
-    liga = db.Column(db.String(100))
-    dr1 = db.Column(db.String(80))
-    dr2 = db.Column(db.String(80))
+    data_meczu = db.Column(db.Date, default=func.today(), nullable=False)
+    liga = db.Column(db.String(100), nullable=False)
+    dr1 = db.Column(db.String(80), nullable=False)
+    dr2 = db.Column(db.String(80), nullable=False)
     wynik_meczu = db.Column(db.String(1))
     kurs = db.relationship('Kursy')
     zaklad = db.relationship('Zaklad')
 
 class Zaklad(db.Model):
     id_zakladu = db.Column(db.Integer, primary_key=True)
-    kurs = db.Column(db.Float)
-    typ = db.Column(db.String(1))
+    kurs = db.Column(db.Float, nullable=False)
+    typ = db.Column(db.String(1), nullable=False)
     Kupon_id_kuponu = db.Column(db.Integer, db.ForeignKey('kupon.id_kuponu'))
     Mecz_id_meczu = db.Column(db.Integer, db.ForeignKey('mecz.id_meczu'))
 
 class Kupon(db.Model):
     id_kuponu = db.Column(db.Integer, primary_key=True)
-    data_zakonczenia = db.Column(db.Date, default=func.today())
-    kwota = db.Column(db.Integer)
-    kurs = db.Column(db.Float)
-    potencjalna_wygrana = db.Column(db.Float)
-    stan = db.Column(db.String(20))
+    data_zakonczenia = db.Column(db.Date, default=func.today(), nullable=False)
+    kwota = db.Column(db.Integer, nullable=False)
+    kurs = db.Column(db.Float, nullable=False)
+    potencjalna_wygrana = db.Column(db.Float, nullable=False)
+    stan = db.Column(db.String(20), nullable=False)
     Klient_id_user = db.Column(db.Integer, db.ForeignKey('klient.id_user'))
 
 class Portfel(db.Model):
     id_portfela = db.Column(db.Integer, primary_key=True)
-    id_klienta = db.Column(db.Integer)
-    stan = db.Column(db.Float)
+    id_klienta = db.Column(db.Integer, nullable=False)
+    stan = db.Column(db.Float, nullable=False)
     Klient_id_user = db.Column(db.Integer, db.ForeignKey('klient.id_user'))
-    zaklad = db.relationship('Wplata')
-    zaklad = db.relationship('Wyplata')
+    wplata = db.relationship('Wplata')
+    wyplata = db.relationship('Wyplata')
 
 class Wplata(db.Model):
     id_wplaty = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Date, default=func.today())
-    kwota = db.Column(db.Float)
-    czy_z_kuponu = db.Column(db.String(1))
+    data = db.Column(db.Date, default=func.today(), nullable=False)
+    kwota = db.Column(db.Float, nullable=False)
+    czy_z_kuponu = db.Column(db.String(1), nullable=False)
     Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela'))
 
 
 class Wyplata(db.Model):
     id_wypłaty = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Date, default=func.today())
-    kwota = db.Column(db.Float)
-    czy_z_kuponu = db.Column(db.String(1))
+    data = db.Column(db.Date, default=func.today(), nullable=False)
+    kwota = db.Column(db.Float, nullable=False)
+    czy_z_kuponu = db.Column(db.String(1), nullable=False)
     Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela'))
 
     
