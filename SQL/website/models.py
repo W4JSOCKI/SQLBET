@@ -20,8 +20,6 @@ class Klient(Uzytkownik):
     id = db.Column(None, db.ForeignKey('uzytkownik.id_user'), primary_key=True)
     first_name = db.Column(db.String(150), nullable=False)
     last_name = db.Column(db.String(150), nullable=False)
-    kupon = db.relationship('Kupon')
-    portfel = db.relationship('Portfel')
     __mapper_args__ = {'polymorphic_identity': 'klient'}
 
 
