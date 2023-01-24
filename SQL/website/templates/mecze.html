@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>Matches</title>
+    <style>
+
+body {
+      background-color: white;
+      background-image: url('static/Matchlist.webp');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+      /* Box styling */
+      .match-box {
+        display: block;
+        margin: 10px;
+        padding: 20px;
+        border: 1px solid black;
+        border-radius: 10px;
+        width: 300px;
+        text-align: center;
+        background-color: aliceblue;
+      }
+      .container {
+       
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Heading styling */
+      h2 {
+        margin-bottom: 20px;
+      }
+
+      /* Team name styling */
+      .team-name {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      
+      /* Center the boxes and stack them vertically*/
+      /* .match-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+      } */
+    </style>
+  </head>
+  {% extends "base.html" %}
+  {% block title %}Matches{% endblock %}
+  {% block content %}
+  <body>
+    <!-- <div class="match-container"> -->
+        <div class="container">
+
+            <form action="/mecze" method="POST">
+            <label>Select league:</label>
+            <select id="league" name="liga">
+              {% for league in Ligi %}
+              <option value="{{ league[0] }}">{{ league[0] }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" value="Submit">
+        </form>
+     
+      {% for match in matches %}
+        <div class="match-box">
+          <h2>{{ match[0] }}</h2>
+          <div class="team-name">{{match[1]}}</div>
+          <div class="team-name">{{match[2]}}</div>
+          <div>Score: {{match[3]}}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </body>
+  {% endblock %}
+</html>
+
