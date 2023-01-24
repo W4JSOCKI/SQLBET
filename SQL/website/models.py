@@ -59,8 +59,8 @@ class Portfel(db.Model):
     id_klienta = db.Column(db.Integer, nullable=False)
     stan = db.Column(db.Float, nullable=False)
     Klient_id_user = db.Column(db.Integer, db.ForeignKey('klient.id_user'))
-    wplata = db.relationship('Wplata')
-    wyplata = db.relationship('Wyplata')
+    wplata = db.relationship('Wplata', cascade="all, delete-orphan")
+    wyplata = db.relationship('Wyplata', cascade="all, delete-orphan")
 
 class Wplata(db.Model):
     id_wplaty = db.Column(db.Integer, primary_key=True)
