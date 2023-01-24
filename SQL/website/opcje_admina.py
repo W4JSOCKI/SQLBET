@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Admin
+from .models import Admin,Mecz
 from werkzeug.security import generate_password_hash
 from . import db
 from SQL.files.Ligi_zespoly import *
+from sqlalchemy import select, update, insert, delete
 from flask_login import current_user
-
+from datetime import datetime,date
 
 dod_admin = Blueprint('dod_admin', __name__)
 
@@ -43,11 +44,11 @@ def dodaj_admina():
 @dod_admin.route('/dodmecz', methods=['GET', 'POST'])
 def dodaj_mecz():
     if request.method == 'POST':
+        conn = db.engine.connect()
         data = request.form.get('data')
         liga = request.form.get('liga')
         druzyna1 = request.form.get('druzyna1')
         druzyna2 = request.form.get('druzyna2')
-        wynik = request.form.get('wynik')
 
         if (data == None):
             flash("You have to chose a date", category='error')
@@ -57,6 +58,9 @@ def dodaj_mecz():
             flash("You can't have same teams against each other...", category = "error")
 
         else:
-
+            data = str(data).split('-')
             print(data, liga, druzyna1, druzyna2)
+            sql = insert(Mecz).values(data_meczu=datetime(int(data[0]),int(data[1]),int(data[2])), liga=liga, dr1=druzyna1,dr2=druzyna2)
+            conn.execute(sql)
+
     return render_template("New_game.html", user=current_user,Ligi=Ligi)
