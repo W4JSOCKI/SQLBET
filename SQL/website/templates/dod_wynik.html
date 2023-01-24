@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
+content %}
+<style>
+    body {
+      background-color: white;
+      background-image: url('static/adminhome.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+  shadow {
+    text-shadow: 0px 0px 8px #FFFFFF;
+}
+
+
+</style>
+
+<form method="POST">
+  <h1><shadow/><h1/>
+
+     <h1 align="center">Chose Game</h1>
+  <label>Select Game:</label>
+  <select id="id" name="game">
+    {% for mecz in Mecze %}
+    <option value="{{ mecz[0]}}">{{ mecz }}</option>
+    {% endfor %}
+  </select>
+       <h1      />
+    <label for="gole1">Team 1 goals</label>
+<input type="number" id="gole1" name="gole1" min="0" max="99" step="1">
+
+       <h1      />
+    <label for="gole2">Team 2 goals</label>
+<input type="number" id="gole2" name="gole2" min="0" max="99" step="1">
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+
+
+{% endblock %}

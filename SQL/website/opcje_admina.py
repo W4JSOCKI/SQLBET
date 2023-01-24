@@ -74,60 +74,76 @@ def dodaj_mecz():
             print(data, liga, druzyna1, druzyna2)
             sql = insert(Mecz).values(data_meczu=datetime(int(data[0]),int(data[1]),int(data[2])), liga=liga, dr1=druzyna1,dr2=druzyna2)
             conn.execute(sql)
+            flash("Game added", category="success")
             return redirect(url_for('views.home_admin'))
 
     return render_template("New_game.html", user=current_user,Ligi=Ligi)
 
 @dod_admin.route('/zmmecz', methods=['GET', 'POST'])
 def edytuj_mecz():
-    if request.method == 'GET':
-        conn = db.engine.connect()
-        sql = select(Mecz.id_meczu,Mecz.liga,Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
-        ligi = conn.execute(sql).fetchall()
-
-    if request.method == 'POST':
-      #  game = request.form.get('game')
-      #  if (game == None):
-         #   flash("You have to chose a game", category='error')
-       # else:
-           # data = str(data).split('-')
-          #  print(game)
-           # sql = insert(Mecz).values(data_meczu=datetime(int(data[0]),int(data[1]),int(data[2])), liga=liga, dr1=druzyna1,dr2=druzyna2)
-            #conn.execute(sql)
-            return redirect(url_for('dod_admin.update_mecz'))
-
-    return render_template("edit_game.html", user=current_user,Ligi=ligi)
-
-
-@dod_admin.route('/updateecz', methods=['GET', 'POST'])
-def update_mecz(): #nie dziala dobrze
-    x=0
     conn = db.engine.connect()
-    if request.form == 'POST' or x == 0:
-        id = request.form["game"]
-        print(id)
-        x=x+1
-    if request.method == 'POST' and x == 1:
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    ligi = conn.execute(sql).fetchall()
+    if request.method == 'POST':
 
+        id = request.form.get("game")
         data = request.form.get('data')
         liga = request.form.get('liga')
         druzyna1 = request.form.get('druzyna1')
         druzyna2 = request.form.get('druzyna2')
+        print(id, data, liga, druzyna1, druzyna2)
 
         if (data == None):
             flash("You have to chose a date", category='error')
-        elif(druzyna1 == None or druzyna2 == None):
-            flash("You must select teams",category='error')
-        elif (druzyna2 == druzyna1) :
-            flash("You can't have same teams against each other...", category = "error")
+        elif (druzyna1 == None or druzyna2 == None):
+            flash("You must select teams", category='error')
+        elif (druzyna2 == druzyna1):
+            flash("You can't have same teams against each other...", category="error")
 
         else:
+            conn = db.engine.connect()
             data = str(data).split('-')
             print(data, liga, druzyna1, druzyna2)
-            sql = update(Mecz).values(data_meczu=datetime(int(data[0]),int(data[1]),int(data[2])), liga=liga, dr1=druzyna1,dr2=druzyna2).where()
+            sql = update(Mecz).values(data_meczu=datetime(int(data[0]), int(data[1]), int(data[2])), liga=liga,
+                                      dr1=druzyna1, dr2=druzyna2).where(Mecz.id_meczu == id)
             conn.execute(sql)
-            x=0
+            print(id,data,liga,druzyna1,druzyna2)
+            flash("Game changed", category="success")
             return redirect(url_for('views.home_admin'))
 
-    return render_template("update_game.html", user=current_user,Ligi=Ligi)
+    return render_template("edit_game.html", user=current_user,Ligi=Ligi,Mecze=ligi)
+
+
+@dod_admin.route('/zmwynik', methods=['GET', 'POST'])
+def dodaj_wynik():
+    conn = db.engine.connect()
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    alll = conn.execute(sql).fetchall()
+    if request.method == 'POST':
+
+        id = request.form.get("game")
+        gole1 = request.form.get('gole1',type=int)
+        gole2 = request.form.get('gole2',type= int)
+
+        print(id, gole2, gole1)
+        if (gole2 == None or gole1 == None):
+            flash("You have to chose a date", category='error')
+
+        else:
+            conn = db.engine.connect()
+            if gole2>gole1:
+                sql= update(Mecz).where(Mecz.wynik_meczu=="2")
+            elif gole1>gole2:
+                sql = update(Mecz).where(Mecz.wynik_meczu == "1")
+            else:
+                sql = update(Mecz).where(Mecz.wynik_meczu == "X")
+
+            print(id, gole2, gole1)
+            #sql = update(Mecz).values(Mecz.wynik).where(Mecz.id_meczu == id)
+            #conn.execute(sql)
+
+            return redirect(url_for('views.home_admin'))
+
+    return render_template("dod_wynik.html", user=current_user,Ligi=Ligi,Mecze=alll)
+
 
