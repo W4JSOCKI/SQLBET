@@ -1,11 +1,26 @@
 {% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
 content %}
+<style>
+    body {
+      background-color: white;
+      background-image: url('static/adminhome.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+  shadow {
+    text-shadow: 0px 0px 8px #FFFFFF;
+}
+
+
+</style>
 
 <form method="POST">
-
+  <h1><shadow/><h1/>
+    <p>
      <h1 align="center">Add Game</h1>
   <div class="form-group">
-       <h1 />
+       <h1      />
     <label for="data">Date</label>
     <input
       type="date"
@@ -14,8 +29,9 @@ content %}
       placeholder="Enter date"
     />
   </div>
-
-    <h1 />
+</p>
+      <p>
+    <h1     />
   <label>Select league:</label>
   <select id="league" onchange="updateTeams()" name="liga">
     {% for league in Ligi %}
@@ -23,19 +39,21 @@ content %}
     {% endfor %}
   </select>
   <br>
-
-        <h1 />
+  </p><p>
+        <h1    />
   <label>Select team:</label>
   <select id="team" name="druzyna1">
     <option value="" disabled selected>Select a league first</option>
   </select>
+  </p><p>
 
-        <h1 />
+        <h1    />
       <label>Select second team:</label>
   <select id="team2" name="druzyna2">
     <option value="" disabled selected>Select a league first</option>
   </select>
     <input type="submit" value="Submit">
+    </p>
 </form>
 
 
