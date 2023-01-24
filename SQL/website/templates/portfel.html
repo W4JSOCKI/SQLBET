@@ -33,6 +33,9 @@
         {% elif loop.index == 2 %}
           <div class="col-md-4">
             <button class="block" onClick="window.location.href='/portfel2'">{{ item }}</button>
+            <form  action=/portfel method="POST">
+            
+            <input class="block" type="submit" value="Submit">
           </div>
           {% elif loop.index == 3 %}
           <div class="col-md-4">
@@ -42,4 +45,5 @@
       {% endfor %}
     </div>
   </div>
+  
   {% endblock %}
