@@ -23,8 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="38512112-8271-4309-99e4-cbc589db4755" name="Default Changelist" comment="Models, add notnull w BD">
-      <change beforePath="$PROJECT_DIR$/SQL/website/opcje_admina.py" beforeDir="false" afterPath="$PROJECT_DIR$/SQL/website/opcje_admina.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SQL/website/templates/home_admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/SQL/website/templates/home_admin.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SQL/files/Ligi_zespoly.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
