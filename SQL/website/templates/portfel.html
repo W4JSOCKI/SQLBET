@@ -1,6 +1,8 @@
 <html>
   <head>
+    <script src="static/main.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
   body {
     background-color: darkgreen;
@@ -31,15 +33,36 @@
         <button class="block" onClick="window.location.href='/portfel1'">{{ item }}</button>
       </div>
         {% elif loop.index == 2 %}
-          <div class="col-md-4">
+          <div class="col-md-4" style="text-align: center;">
+            
             <button class="block" onClick="window.location.href='/portfel2'">{{ item }}</button>
+           
+            <button onclick="deleteRecord(event)" data-id="1" style="background-color: #f44336; color: white; text-align: center; padding: 8px 8px; font-size: 10px; border-radius: 5px;">
+              <i class="fa fa-trash"></i>
+              Usuń portfel
+          </button>
+                    
           </div>
           {% elif loop.index == 3 %}
           <div class="col-md-4">
             <button class="block" onClick="window.location.href='/portfel3'">{{ item }}</button>
+            <button onclick="deleteRecord(event)" data-id="2" style="background-color: #f44336; color: white; text-align: center; padding: 8px 8px; font-size: 10px; border-radius: 5px;">
+              <i class="fa fa-trash"></i>
+              Usuń portfel
+          </button>
+          
           </div>
           {% endif %}
+
       {% endfor %}
+     
     </div>
+    
   </div>
+  <div class="container" style="text-align: center; padding-top: 300px;">
+  <button onclick="window.location.href='/addp'" style="background-color: #7d8d9a; color: white; text-align: center;  font-size: 60px; border-radius: 0px;">
+    <i class="fa fa-plus"></i>
+    Dodaj portfel
+</button>
+</div>
   {% endblock %}

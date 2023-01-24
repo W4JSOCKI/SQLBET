@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify,redirect,url_for
 from flask_login import login_required, current_user
 from .models import Portfel, Wplata, Wyplata
 from sqlalchemy import select, update, insert, delete
@@ -6,6 +6,7 @@ from . import db
 import json
 import numpy as np
 from datetime import date
+
 
 portfel = Blueprint('portfel', __name__)
 
@@ -28,6 +29,33 @@ def home():
     #button_tags =["Portfel #1","Portfel #2"]
 
     return render_template("portfel.html", user=current_user,button_tags=button_tags,type=0)
+
+@portfel.route('/deletep', methods=['DELETE'])
+def deletep():
+    data = request.get_json()
+    record_id = int(data["id"])
+    userid=current_user.id_user
+    sql = select(Portfel.id_portfela).where(Portfel.id_klienta==userid).order_by(Portfel.id_portfela)
+    conn = db.engine.connect()
+    portfele = conn.execute(sql).fetchall()
+    print(portfele)
+    port_id=portfele[1][0]
+    sql= (delete(Portfel).where(Portfel.id_portfela==port_id))
+    result = conn.execute(sql)
+    
+
+    return jsonify({"status": "ok"},200) 
+
+@portfel.route('/addp')
+def addp():
+    
+    userid=current_user.id_user
+    conn = db.engine.connect()
+
+    sql = insert(Portfel).values(id_klienta=userid,stan=0)
+    result = conn.execute(sql)
+    return redirect(url_for('portfel.home'))
+    
 
 @portfel.route('/portfel1', methods=['GET', 'POST'])
 @login_required
