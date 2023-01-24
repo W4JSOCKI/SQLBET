@@ -1,19 +1,78 @@
-<head>
-    <link rel="stylesheet" href="static/index.css">
+<html><head>
+    <title>{{pn}}</title>
     <style>
-    body {
+       body {
       background-color: darkgreen;
-      background-image: url('static/Robercik.jpg');
+      background-image: url('static/porfel1.jpg');
       background-repeat: no-repeat;
       background-attachment: fixed;
       background-size: cover;
+      color:white;
+      
     }
+
+    table{
+      color: white;
+    }
+    form{
+      color: white;}
+      h1{
+        color: white;
+      }
     </style>
-
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
-<h1 align="center">,</h1>
-<div align="center">
-  <button type="button" class="block" >{{pn}}</button>
-</div>
-
-{% endblock %}
+   
+  </head>
+ 
+ {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+ <body>
+    <div class="container">
+    <h1>{{pn}}</h1>
+      <h1>Saldo: {{stan}}zł</h1>
+    <form onsubmit="submitForm(event)" action={{ptag}} method="POST">
+      <label>Wpłać:</label>
+      <input type="number" name="deposit" min="0" max="10000" step="0.01">
+      <br>
+      <label>Wypłać:</label>
+      <input type="number" name="payoff" min="0" max="10000" step="0.01">
+      <br>
+      <input type="submit" value="Submit">
+    </form>
+      <table>
+      <tbody><tr> 
+        <th>ID</th>
+        <th>Data</th>
+        <th>Kwota</th>
+        <th>Czy z kuponu?</th>
+      </tr>
+      
+      {% for payment in payments %}
+      <tr>
+        <td>{{ payment[0] }}</td>
+        <td>{{ payment[1]}}</td>
+        <td>{{ payment[2]}}zł</td>
+        <td>{{ payment[3] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody></table>
+  
+    <table>
+      <tbody><tr>
+        <th>ID</th>
+        <th>Data</th>
+        <th>Kwota</th>
+        <th>Czy z kuponu?</th>
+      </tr>
+      
+      {% for payoff in payoffs %}
+      <tr>
+        <td>{{ payoff[0] }}</td>
+        <td>{{ payoff[1] }}</td>
+        <td>{{ payoff[2] }}zł</td>
+        <td>{{ payoff[3] }}</td>
+      </tr>
+      {% endfor %}
+      
+      
+    </tbody></table>  </body>
+    {% endblock %}
+  

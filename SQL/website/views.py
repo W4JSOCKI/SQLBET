@@ -12,7 +12,7 @@ views = Blueprint('views', __name__)
 def home():
     flash('Welcme to SQLBET!', category='success')
 
-    return render_template("home.html", user=current_user)
+    return render_template("home.html", user=current_user, type = 0)
 
 @views.route('/admin', methods=['GET', 'POST'])
 def home_admin():
