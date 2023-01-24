@@ -20,6 +20,8 @@ class Klient(Uzytkownik):
     id = db.Column(None, db.ForeignKey('uzytkownik.id_user'), primary_key=True)
     first_name = db.Column(db.String(150), nullable=False)
     last_name = db.Column(db.String(150), nullable=False)
+    kupon = db.relationship('Kupon')
+    portfel = db.relationship('Portfel')
     __mapper_args__ = {'polymorphic_identity': 'klient'}
 
 
@@ -52,13 +54,13 @@ class Kupon(db.Model):
     kurs = db.Column(db.Float, nullable=False)
     potencjalna_wygrana = db.Column(db.Float, nullable=False)
     stan = db.Column(db.String(20), nullable=False)
-    Klient_id_user = db.Column(db.Integer, db.ForeignKey('klient.id_user'))
+    Klient_id_user = db.Column(db.Integer, db.ForeignKey('uzytkownik.id_user'))
 
 class Portfel(db.Model):
     id_portfela = db.Column(db.Integer, primary_key=True)
     id_klienta = db.Column(db.Integer, nullable=False)
     stan = db.Column(db.Float, nullable=False)
-    Klient_id_user = db.Column(db.Integer, db.ForeignKey('klient.id_user'))
+    Klient_id_user = db.Column(db.Integer, db.ForeignKey('uzytkownik.id_user'))
     wplata = db.relationship('Wplata', cascade="all, delete-orphan")
     wyplata = db.relationship('Wyplata', cascade="all, delete-orphan")
 
