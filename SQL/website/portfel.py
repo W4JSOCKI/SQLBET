@@ -64,7 +64,12 @@ def addp():
     
     userid=current_user.id_user
     conn = db.engine.connect()
-
+    sql = select(Portfel.id_portfela).where(Portfel.id_klienta==userid).order_by(Portfel.id_portfela.desc())
+    portfele = conn.execute(sql).fetchall()
+    if(len(portfele)>=3):
+        flash("Nie możesz mieć więcej niż trzech portfeli", category="error") #TODO - flash nie działa
+        return redirect(url_for('portfel.home'))
+    
     sql = insert(Portfel).values(id_klienta=userid,stan=0)
     result = conn.execute(sql)
     return redirect(url_for('portfel.home'))
@@ -98,9 +103,9 @@ def portfel1():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+                sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success") 
         elif(len(deposit)>0):
@@ -108,7 +113,7 @@ def portfel1():
             sql =( update(Portfel).where(Portfel.id_portfela==portfele[0]).values(stan=stan))
             conn.execute(sql)
             today=date.today()
-            sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+            sql = insert(Wplata).values(Portfel_id_portfela=portfele[0],kwota=fdeposit,czy_z_kuponu='N',data=today)
             conn.execute(sql)
             flash("Operacja zrealizowana pomyślnie", category="success")
         elif(len(payoff)>0):
@@ -119,7 +124,7 @@ def portfel1():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success")
         
@@ -167,9 +172,9 @@ def portfel2():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[1][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+                sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success") 
         elif(len(deposit)>0):
@@ -177,7 +182,7 @@ def portfel2():
             sql =( update(Portfel).where(Portfel.id_portfela==portfele[1][0]).values(stan=stan))
             conn.execute(sql)
             today=date.today()
-            sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+            sql = insert(Wplata).values(Portfel_id_portfela=portfele[1][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
             conn.execute(sql)
             flash("Operacja zrealizowana pomyślnie", category="success")
         elif(len(payoff)>0):
@@ -188,7 +193,7 @@ def portfel2():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[1][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[1][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success")
         
@@ -237,9 +242,9 @@ def portfel3():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[2][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+                sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success") 
         elif(len(deposit)>0):
@@ -247,7 +252,7 @@ def portfel3():
             sql =( update(Portfel).where(Portfel.id_portfela==portfele[2][0]).values(stan=stan))
             conn.execute(sql)
             today=date.today()
-            sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='T',data=today)
+            sql = insert(Wplata).values(Portfel_id_portfela=portfele[2][0],kwota=fdeposit,czy_z_kuponu='N',data=today)
             conn.execute(sql)
             flash("Operacja zrealizowana pomyślnie", category="success")
         elif(len(payoff)>0):
@@ -258,7 +263,7 @@ def portfel3():
                 sql =( update(Portfel).where(Portfel.id_portfela==portfele[2][0]).values(stan=stan))
                 conn.execute(sql)
                 today=date.today()
-                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='T',data=today)
+                sql = insert(Wyplata).values(Portfel_id_portfela=portfele[2][0],kwota=fpayoff,czy_z_kuponu='N',data=today)
                 conn.execute(sql)
                 flash("Operacja zrealizowana pomyślnie", category="success")
         
