@@ -1,0 +1,424 @@
+Index: SQL/website/templates/home_admin.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"base.html\" %} {% block title %}Add admin{% endblock %} {% block\r\ncontent %}\r\n\r\n\r\n<head>\r\n<link rel=\"stylesheet\" href=\"static/index.css\">\r\n<style>\r\nbody {\r\n  background-color: withe;\r\n  background-image: url('static/adminhome.jpg');\r\n  background-repeat: no-repeat;\r\n  background-attachment: fixed;\r\n  background-size: cover;\r\n}\r\n</style>\r\n</head>\r\n<h1>        </h1>\r\n\r\n<div align=\"center\">\r\n  <button type=\"button\" class=\"button-85\" onClick=\"window.location.href='/dodmecz'\">Add Game</button>\r\n</div>\r\n<div align=\"center\">\r\n  <button type=\"button\" class=\"button-85\" onClick=\"window.location.href='/zmmecz'\">Edit Game</button>\r\n</div>\r\n\r\n<div align=\"center\">\r\n  <button type=\"button\" class=\"button-85\" onClick=\"window.location.href='/dodadmin'\">Add Admin</button>\r\n</div>\r\n\r\n\r\n{% endblock %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/website/templates/home_admin.html b/SQL/website/templates/home_admin.html
+--- a/SQL/website/templates/home_admin.html	(revision bbebc016661c5ba8bf004478c46a5a7c457b1aed)
++++ b/SQL/website/templates/home_admin.html	(date 1674568533530)
+@@ -16,14 +16,18 @@
+ </head>
+ <h1>        </h1>
+ 
+-<div align="center">
++<div align="left">
+   <button type="button" class="button-85" onClick="window.location.href='/dodmecz'">Add Game</button>
+ </div>
+-<div align="center">
++<div align="left">
+   <button type="button" class="button-85" onClick="window.location.href='/zmmecz'">Edit Game</button>
+ </div>
++<div align="left">
++  <button type="button" class="button-85" onClick="window.location.href='/zmwynik'">Add end score</button>
++</div>
+ 
+-<div align="center">
++
++<div align="right">
+   <button type="button" class="button-85" onClick="window.location.href='/dodadmin'">Add Admin</button>
+ </div>
+ 
+Index: SQL/website/opcje_admina.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from flask import Blueprint, render_template, request, flash, redirect, url_for\r\nfrom .models import Admin\r\nfrom werkzeug.security import generate_password_hash, check_password_hash\r\nfrom . import db\r\nfrom sqlalchemy import select,update,insert,text\r\nfrom sqlalchemy.sql import functions\r\nfrom flask_login import login_user, login_required, logout_user, current_user\r\n\r\n\r\ndod_admin = Blueprint('dod_admin', __name__)\r\n\r\n\r\n@dod_admin.route('/dodadmin', methods=['GET', 'POST'])\r\ndef dodaj_admina():\r\n    if request.method == 'POST':\r\n        email = request.form.get('email')\r\n        level = request.form.get('level', type=int)\r\n        password1 = request.form.get('password1')\r\n        password2 = request.form.get('password2')\r\n\r\n        user = Admin.query.filter_by(email=email).first()\r\n        if user:\r\n            flash('Email already exists.', category='error')\r\n        elif len(email) < 4:\r\n            flash('Email must be greater than 3 characters.', category='error')\r\n        elif level <0 or level >4:\r\n            flash('Levels: 0-4', category='error')\r\n        elif password1 != password2:\r\n            flash('Passwords don\\'t match.', category='error')\r\n        elif len(password1) < 7:\r\n            flash('Password must be at least 7 characters.', category='error')\r\n        else:\r\n            new_user = Admin(email=email, poziom=level, password=generate_password_hash(\r\n                password1, method='sha256'))\r\n            db.session.add(new_user)\r\n            db.session.commit()\r\n            flash('Account created!', category='success')\r\n            return redirect(url_for('views.home_admin'))\r\n\r\n    return render_template(\"sign_up_NEW_admin.html\", user=current_user)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/website/opcje_admina.py b/SQL/website/opcje_admina.py
+--- a/SQL/website/opcje_admina.py	(revision bbebc016661c5ba8bf004478c46a5a7c457b1aed)
++++ b/SQL/website/opcje_admina.py	(date 1674581374281)
+@@ -1,15 +1,13 @@
+ from flask import Blueprint, render_template, request, flash, redirect, url_for
+ from .models import Admin
+-from werkzeug.security import generate_password_hash, check_password_hash
++from werkzeug.security import generate_password_hash
+ from . import db
+-from sqlalchemy import select,update,insert,text
+-from sqlalchemy.sql import functions
+-from flask_login import login_user, login_required, logout_user, current_user
++from SQL.files.Ligi_zespoly import *
++from flask_login import current_user
+ 
+ 
+ dod_admin = Blueprint('dod_admin', __name__)
+ 
+-
+ @dod_admin.route('/dodadmin', methods=['GET', 'POST'])
+ def dodaj_admina():
+     if request.method == 'POST':
+@@ -23,8 +21,10 @@
+             flash('Email already exists.', category='error')
+         elif len(email) < 4:
+             flash('Email must be greater than 3 characters.', category='error')
+-        elif level <0 or level >4:
+-            flash('Levels: 0-4', category='error')
++        elif type(level) != int:
++            flash('Level is a number', category='error')
++        elif level < 0 or level > 4:
++            flash('Levels: 1-4', category='error')
+         elif password1 != password2:
+             flash('Passwords don\'t match.', category='error')
+         elif len(password1) < 7:
+@@ -39,3 +39,20 @@
+ 
+     return render_template("sign_up_NEW_admin.html", user=current_user)
+ 
++
++@dod_admin.route('/dodmecz', methods=['GET', 'POST'])
++def dodaj_mecz():
++    if request.method == 'POST':
++        data = request.form.get('data')
++        liga = request.form.get('liga')
++        druzyna1 = request.form.get('druzyna1')
++        druzyna2 = request.form.get('druzyna2')
++        wynik = request.form.get('wynik')
++
++        if(druzyna2==druzyna1):
++            flash("You can't have same teams against each other...", category = "error")
++
++
++
++        print(data, liga, druzyna1, druzyna2)
++    return render_template("New_game.html", user=current_user,Ligi=Ligi)
+Index: SQL/website/static/index.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>.block {\r\n    display: block;\r\n    width: 50%;\r\n    border: 2px solid #100909;\r\n    background-color: #7d8d9a;\r\n    padding-top: 50px;\r\n    padding-bottom: 50px;\r\n    font-size: 60px;\r\n    cursor: pointer;\r\n    text-align: center;\r\n  }\r\n\r\n\r\n.button-18 {\r\n  align-items: center;\r\n  background-color: #7d8d9a;\r\n  border: 0;\r\n  border-radius: 100px;\r\n  box-sizing: border-box;\r\n  color: #ffffff;\r\n  cursor: pointer;\r\n  display: inline-flex;\r\n  font-family: -apple-system, system-ui, system-ui, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Fira Sans\", Ubuntu, Oxygen, \"Oxygen Sans\", Cantarell, \"Droid Sans\", \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Lucida Grande\", Helvetica, Arial, sans-serif;\r\n  font-size: 16px;\r\n  font-weight: 600;\r\n  justify-content: center;\r\n  line-height: 20px;\r\n  max-width: 480px;\r\n  min-height: 80px;\r\n  min-width: 180px;\r\n  margin-left: 100px;\r\n  margin-bottom: 100px;\r\n  margin-top: 100px;\r\n  overflow: hidden;\r\n  padding: 0px;\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n  text-align: center;\r\n  touch-action: manipulation;\r\n  transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, box-shadow 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s;\r\n  user-select: none;\r\n  -webkit-user-select: none;\r\n  vertical-align: middle;\r\n}\r\n\r\n/* CSS */\r\n.button-85 {\r\n  padding: 0.6em 2em;\r\n  border: none;\r\n  outline: none;\r\n  color: rgb(255, 255, 255);\r\n  background: #111;\r\n  cursor: pointer;\r\n  font-size: 16px;\r\n  font-weight: 600;\r\n  max-width: 480px;\r\n  min-height: 80px;\r\n  min-width: 180px;\r\n  margin-left: 100px;\r\n  margin-bottom: 100px;\r\n  position: relative;\r\n  z-index: 0;\r\n  border-radius: 10px;\r\n  user-select: none;\r\n  -webkit-user-select: none;\r\n  touch-action: manipulation;\r\n}\r\n\r\n.button-85:before {\r\n  content: \"\";\r\n  background: linear-gradient(\r\n    45deg,\r\n    #ff0000,\r\n    #ff7300,\r\n    #fffb00,\r\n    #48ff00,\r\n    #00ffd5,\r\n    #002bff,\r\n    #7a00ff,\r\n    #ff00c8,\r\n    #ff0000\r\n  );\r\n  position: absolute;\r\n  top: -2px;\r\n  left: -2px;\r\n  background-size: 400%;\r\n  z-index: -1;\r\n  filter: blur(5px);\r\n  -webkit-filter: blur(5px);\r\n  width: calc(100% + 4px);\r\n  height: calc(100% + 4px);\r\n  animation: glowing-button-85 20s linear infinite;\r\n  transition: opacity 0.3s ease-in-out;\r\n  border-radius: 0px;\r\n}\r\n\r\n@keyframes glowing-button-85 {\r\n  0% {\r\n    background-position: 0 0;\r\n  }\r\n  50% {\r\n    background-position: 100% 0;\r\n  }\r\n  100% {\r\n    background-position: 0 0;\r\n  }\r\n}\r\n\r\n.button-85:after {\r\n  z-index: -1;\r\n  content: \"\";\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  background: #222;\r\n  left: 0;\r\n  top: 0;\r\n  border-radius: 10px;\r\n}\r\n\r\n<!-- HTML !-->\r\n<button class=\"button-86\" role=\"button\">Button 86</button>\r\n\r\n/* CSS */\r\n.button-86 {\r\n  all: unset;\r\n  width: 100px;\r\n  height: 30px;\r\n  font-size: 16px;\r\n  background: transparent;\r\n  border: none;\r\n  position: relative;\r\n  color: #f0f0f0;\r\n  cursor: pointer;\r\n  z-index: 1;\r\n  padding: 10px 20px;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  white-space: nowrap;\r\n  user-select: none;\r\n  -webkit-user-select: none;\r\n  touch-action: manipulation;\r\n}\r\n\r\n.button-86::after,\r\n.button-86::before {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0;\r\n  right: 0;\r\n  z-index: -99999;\r\n  transition: all .4s;\r\n}\r\n\r\n.button-86::before {\r\n  transform: translate(0%, 0%);\r\n  width: 100%;\r\n  height: 100%;\r\n  background: #28282d;\r\n  border-radius: 10px;\r\n}\r\n\r\n.button-86::after {\r\n  transform: translate(10px, 10px);\r\n  width: 35px;\r\n  height: 35px;\r\n  background: #ffffff15;\r\n  backdrop-filter: blur(5px);\r\n  -webkit-backdrop-filter: blur(5px);\r\n  border-radius: 50px;\r\n}\r\n\r\n.button-86:hover::before {\r\n  transform: translate(5%, 20%);\r\n  width: 110%;\r\n  height: 110%;\r\n}\r\n\r\n.button-86:hover::after {\r\n  border-radius: 10px;\r\n  transform: translate(0, 0);\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.button-86:active::after {\r\n  transition: 0s;\r\n  transform: translate(0, 5%);\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/website/static/index.css b/SQL/website/static/index.css
+--- a/SQL/website/static/index.css	(revision bbebc016661c5ba8bf004478c46a5a7c457b1aed)
++++ b/SQL/website/static/index.css	(date 1674568676938)
+@@ -53,11 +53,12 @@
+   cursor: pointer;
+   font-size: 16px;
+   font-weight: 600;
+-  max-width: 480px;
+-  min-height: 80px;
+-  min-width: 180px;
++  max-width: 600px;
++  min-height: 100px;
++  min-width: 300px;
+   margin-left: 100px;
+-  margin-bottom: 100px;
++  margin-bottom: 30px;
++  margin-top: 60px;
+   position: relative;
+   z-index: 0;
+   border-radius: 10px;
+@@ -118,20 +119,19 @@
+   border-radius: 10px;
+ }
+ 
+-<!-- HTML !-->
+-<button class="button-86" role="button">Button 86</button>
+ 
+ /* CSS */
+ .button-86 {
+   all: unset;
+-  width: 100px;
+-  height: 30px;
++  width: 200px;
++  height: 60px;
+   font-size: 16px;
+   background: transparent;
+   border: none;
+   position: relative;
+   color: #f0f0f0;
+   cursor: pointer;
++  inline:true;
+   z-index: 1;
+   padding: 10px 20px;
+   display: flex;
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1674423769986)
++++ b/.idea/vcs.xml	(date 1674423769986)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+--- /dev/null	(date 1674423769903)
++++ b/.idea/modules.xml	(date 1674423769903)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/SQLBET.iml" filepath="$PROJECT_DIR$/.idea/SQLBET.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1674423769871)
++++ b/.idea/misc.xml	(date 1674423769871)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (Projekty)" project-jdk-type="Python SDK" />
++  <component name="PyCharmProfessionalAdvertiser">
++    <option name="shown" value="true" />
++  </component>
++</project>
+\ No newline at end of file
+Index: SQL/files/Ligi_zespoly.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/files/Ligi_zespoly.py b/SQL/files/Ligi_zespoly.py
+new file mode 100644
+--- /dev/null	(date 1674579033470)
++++ b/SQL/files/Ligi_zespoly.py	(date 1674579033470)
+@@ -0,0 +1,42 @@
++
++
++Ligi = {"Ekstraklasa":["Raków Częstochowa",
++"Legia Warszawa",
++"Widzew Łódź",
++"Pogoń Szczecin",
++"Wisła Płock",
++"Lech Poznań",
++"Stal Mielec",
++"Cracovia",
++"Warta Poznań",
++"Radomiak Radom",
++"Śląsk Wrocław",
++"Górnik Zabrze",
++"Jagiellonia Białystok",
++"KS Lechia Gdańsk",
++"Zagłębie Lubin",
++"Piast Gliwice",
++"MKS Korona Kielce",
++"Miedź Legnica"], "LaLiga":[], "Bundesliga":[], "Premier League":["Arsenal",
++"Manchester City",
++"Newcastle",
++"Manchester Utd",
++"Tottenham",
++"Brighton",
++"Fulham",
++"Brentford",
++"Liverpool",
++"Chelsea",
++"Aston Villa",
++"Crystal Palace",
++"Nottingham",
++"Leicester",
++"Leeds",
++"West Ham",
++"Wolves",
++"Bournemouth",
++"Everton",
++"Southampton"]}
++
++
++
+Index: .idea/SQLBET.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/SQLBET.iml b/.idea/SQLBET.iml
+new file mode 100644
+--- /dev/null	(date 1674423769226)
++++ b/.idea/SQLBET.iml	(date 1674423769226)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="PYTHON_MODULE" version="4">
++  <component name="NewModuleRootManager">
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: SQL/website/static/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>function deleteNote(noteId) {\r\n  fetch(\"/delete-note\", {\r\n    method: \"POST\",\r\n    body: JSON.stringify({ noteId: noteId }),\r\n  }).then((_res) => {\r\n    window.location.href = \"/\";\r\n  });\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/website/static/index.js b/SQL/website/static/index.js
+--- a/SQL/website/static/index.js	(revision bbebc016661c5ba8bf004478c46a5a7c457b1aed)
++++ b/SQL/website/static/index.js	(date 1674578610657)
+@@ -1,8 +1,0 @@
+-function deleteNote(noteId) {
+-  fetch("/delete-note", {
+-    method: "POST",
+-    body: JSON.stringify({ noteId: noteId }),
+-  }).then((_res) => {
+-    window.location.href = "/";
+-  });
+-}
+\ No newline at end of file
+Index: .idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/profiles_settings.xml b/.idea/inspectionProfiles/profiles_settings.xml
+new file mode 100644
+--- /dev/null	(date 1674423769945)
++++ b/.idea/inspectionProfiles/profiles_settings.xml	(date 1674423769945)
+@@ -0,0 +1,6 @@
++<component name="InspectionProjectProfileManager">
++  <settings>
++    <option name="USE_PROJECT_PROFILE" value="false" />
++    <version value="1.0" />
++  </settings>
++</component>
+\ No newline at end of file
+Index: SQL/website/templates/New_Game.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/website/templates/New_Game.html b/SQL/website/templates/New_Game.html
+new file mode 100644
+--- /dev/null	(date 1674581233171)
++++ b/SQL/website/templates/New_Game.html	(date 1674581233171)
+@@ -0,0 +1,74 @@
++{% extends "base.html" %} {% block title %}Add admin{% endblock %} {% block
++content %}
++
++    <style>
++    body {
++      background-color: #A0AB7E;
++      background-repeat: no-repeat;
++      background-attachment: fixed;
++      background-size: cover;
++    }
++    </style>
++
++<font size="6"/>
++<form  METHOD="post">
++
++  <h1/>
++   <div class="form-group">
++    <label for="data">Date</label>
++    <input type="date" id="data" name="data">
++  </div>
++
++  <h1/>
++  <label>Select league:</label>
++  <select id="league" onchange="updateTeams()" name = liga>
++    {% for league in Ligi %}
++    <option value="{{ league }}">{{ league }}</option>
++    {% endfor %}
++  </select>
++  <br>
++
++  <h1/>
++  <label>Select team:</label>
++  <select id="team" name="druzyna1">
++    <option value="" disabled selected>Select a league first</option>
++  </select>
++
++<h1/>
++    <label>Select second team:</label>
++  <select id="team2" name="druzyna2">
++    <option value="" disabled selected>Select a first team</option>
++  </select>
++
++  <input type="submit" value="Submit">
++</form>
++
++
++<script>
++  function updateTeams() {
++    var league = document.getElementById("league").value;
++    var teamList = document.getElementById("team");
++    var teamList2 = document.getElementById("team2");
++    teamList.innerHTML = "";
++    teamList2.innerHTML = "";
++    {% for league, teams in Ligi.items() %}
++    if (league == "{{ league }}") {
++      {% for team in teams %}
++      var option = document.createElement("option");
++      option.value = "{{ team }}";
++      option.text = "{{ team }}";
++      teamList.add(option);
++      {% endfor %}
++      {% for team2 in teams %}
++      var option = document.createElement("option");
++      option.value = "{{ team2 }}";
++      option.text = "{{ team2 }}";
++      teamList2.add(option);
++      {% endfor %}
++    }
++    {% endfor %}
++
++  }
++</script>
++
++{% endblock %}
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1674423734495)
++++ b/.idea/.gitignore	(date 1674423734495)
+@@ -0,0 +1,3 @@
++# Default ignored files
++/shelf/
++/workspace.xml
+Index: SQL/website/templates/sign_up_NEW_admin.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"base.html\" %} {% block title %}Add admin{% endblock %} {% block\r\ncontent %}\r\n\r\n    <style>\r\n    body {\r\n      background-color: darkgreen;\r\n      background-image: url('static/gre.jpg');\r\n      background-repeat: no-repeat;\r\n      background-attachment: fixed;\r\n      background-size: cover;\r\n    }\r\n    </style>\r\n\r\n<form method=\"POST\">\r\n  <h3 align=\"center\">Add Admin</h3>\r\n  <div class=\"form-group\">\r\n    <label for=\"email\">Email Address</label>\r\n    <input\r\n      type=\"email\"\r\n      class=\"form-control\"\r\n      id=\"email\"\r\n      name=\"email\"\r\n      placeholder=\"Enter email\"\r\n    />\r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"level\">Level</label>\r\n    <input\r\n      type=\"text\"\r\n      class=\"form-control\"\r\n      id=\"level\"\r\n      name=\"level\"\r\n      placeholder=\"Enter level of Admin\"\r\n    />\r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"password1\">Password</label>\r\n    <input\r\n      type=\"password\"\r\n      class=\"form-control\"\r\n      id=\"password1\"\r\n      name=\"password1\"\r\n      placeholder=\"Enter password\"\r\n    />\r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"password2\">Password (Confirm)</label>\r\n    <input\r\n      type=\"password\"\r\n      class=\"form-control\"\r\n      id=\"password2\"\r\n      name=\"password2\"\r\n      placeholder=\"Confirm password\"\r\n    />\r\n  </div>\r\n  <br />\r\n  <button type=\"submit\" class=\"btn btn-primary\">Submit</button>\r\n</form>\r\n{% endblock %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SQL/website/templates/sign_up_NEW_admin.html b/SQL/website/templates/sign_up_NEW_admin.html
+--- a/SQL/website/templates/sign_up_NEW_admin.html	(revision bbebc016661c5ba8bf004478c46a5a7c457b1aed)
++++ b/SQL/website/templates/sign_up_NEW_admin.html	(date 1674568729701)
+@@ -12,6 +12,7 @@
+     </style>
+ 
+ <form method="POST">
++  <h1></h1>
+   <h3 align="center">Add Admin</h3>
+   <div class="form-group">
+     <label for="email">Email Address</label>

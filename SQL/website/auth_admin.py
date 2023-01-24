@@ -24,6 +24,8 @@ def login():
                 flash('Incorrect password, try again.', category='error')
         else:
             flash('You are not an admin.', category='error')
+
+        
     return render_template("login.html", user=current_user, type = 1)
 
 

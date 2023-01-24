@@ -1,14 +1,12 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import Admin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from . import db
-from sqlalchemy import select,update,insert,text
-from sqlalchemy.sql import functions
-from flask_login import login_user, login_required, logout_user, current_user
+from SQL.files.Ligi_zespoly import *
+from flask_login import current_user
 
 
 dod_admin = Blueprint('dod_admin', __name__)
-
 
 @dod_admin.route('/dodadmin', methods=['GET', 'POST'])
 def dodaj_admina():
@@ -23,8 +21,10 @@ def dodaj_admina():
             flash('Email already exists.', category='error')
         elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
-        elif level <0 or level >4:
-            flash('Levels: 0-4', category='error')
+        elif type(level) != int:
+            flash('Level is a number', category='error')
+        elif level < 0 or level > 4:
+            flash('Levels: 1-4', category='error')
         elif password1 != password2:
             flash('Passwords don\'t match.', category='error')
         elif len(password1) < 7:
@@ -39,3 +39,20 @@ def dodaj_admina():
 
     return render_template("sign_up_NEW_admin.html", user=current_user)
 
+
+@dod_admin.route('/dodmecz', methods=['GET', 'POST'])
+def dodaj_mecz():
+    if request.method == 'POST':
+        data = request.form.get('data')
+        liga = request.form.get('liga')
+        druzyna1 = request.form.get('druzyna1')
+        druzyna2 = request.form.get('druzyna2')
+        wynik = request.form.get('wynik')
+
+        if(druzyna2==druzyna1):
+            flash("You can't have same teams against each other...", category = "error")
+
+
+
+        print(data, liga, druzyna1, druzyna2)
+    return render_template("New_game.html", user=current_user,Ligi=Ligi)
