@@ -19,6 +19,7 @@ def create_app():
     from .portfel import portfel
     from .mecze import mecze
     from .opcje_admina import dod_admin
+    from .kupon import kupony
 
 
     app.register_blueprint(views, url_prefix='/')
@@ -27,6 +28,7 @@ def create_app():
     app.register_blueprint(portfel, url_prefix='/')
     app.register_blueprint(mecze, url_prefix='/')
     app.register_blueprint(dod_admin, url_prefix='/')
+    app.register_blueprint(kupony, url_prefix='/')
 
     from .models import Uzytkownik,Kupon,Mecz,Zaklad,Kursy,Admin,Klient,Wplata,Wyplata,Portfel
 
