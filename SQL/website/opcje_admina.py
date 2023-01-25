@@ -160,7 +160,7 @@ def dodaj_wynik():
 @dod_admin.route('/dodkurs', methods=['GET', 'POST'])
 def dodaj_kurs():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2).where(Mecz.data_meczu > date.today(),Mecz.wynik_meczu == None).order_by(Mecz.data_meczu)
     alll = conn.execute(sql).fetchall()
 
     if request.method == 'POST':
