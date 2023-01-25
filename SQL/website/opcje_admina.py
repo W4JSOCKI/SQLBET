@@ -1,9 +1,10 @@
+import sqlalchemy
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Admin, Mecz, Klient, Kursy
+from .models import Admin, Mecz, Klient, Kursy, Uzytkownik, Portfel, Wplata,Wyplata
 from werkzeug.security import generate_password_hash
 from . import db
-from files.Ligi_zespoly import *
-from sqlalchemy import select, update, insert, delete
+from SQL.files.Ligi_zespoly import *
+from sqlalchemy import select, update, insert, delete, null
 from flask_login import current_user
 from datetime import datetime,date
 
@@ -50,7 +51,7 @@ def dodaj_admina():
             flash('Account created!', category='success')
             return redirect(url_for('views.home_admin'))
 
-    return render_template("sign_up_NEW_admin.html", user=current_user)
+    return render_template("sign_up_NEW_admin.html", user=current_user,type=1)
 
 
 @dod_admin.route('/dodmecz', methods=['GET', 'POST'])
@@ -66,6 +67,8 @@ def dodaj_mecz():
             flash("You have to chose a date", category='error')
         elif (data == ""):
             flash("You have to chose a date", category='error')
+        elif (data < ""):
+            flash("You have to chose a date", category='error')
         elif(druzyna1 == None or druzyna2 == None):
             flash("You must select teams",category='error')
         elif (druzyna2 == druzyna1) :
@@ -79,12 +82,12 @@ def dodaj_mecz():
             flash("Game added", category="success")
             return redirect(url_for('views.home_admin'))
 
-    return render_template("New_game.html", user=current_user,Ligi=Ligi)
+    return render_template("New_game.html", user=current_user,Ligi=Ligi,type=1)
 
 @dod_admin.route('/zmmecz', methods=['GET', 'POST'])
 def edytuj_mecz():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2,Mecz.wynik_meczu).where(Mecz.data_meczu > date.today(),Mecz.wynik_meczu == None).order_by(Mecz.data_meczu)
     ligi = conn.execute(sql).fetchall()
     if request.method == 'POST':
 
@@ -113,13 +116,13 @@ def edytuj_mecz():
             flash("Game changed", category="success")
             return redirect(url_for('views.home_admin'))
 
-    return render_template("edit_game.html", user=current_user,Ligi=Ligi,Mecze=ligi)
+    return render_template("edit_game.html", user=current_user,Ligi=Ligi,Mecze=ligi,type=1)
 
 
 @dod_admin.route('/zmwynik', methods=['GET', 'POST'])
 def dodaj_wynik():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2).where(Mecz.data_meczu <= date.today(),Mecz.wynik_meczu == None).order_by(Mecz.data_meczu)
     alll = conn.execute(sql).fetchall()
     if request.method == 'POST':
 
@@ -127,6 +130,8 @@ def dodaj_wynik():
         gole1 = request.form.get('gole1',type=int)
         gole2 = request.form.get('gole2',type= int)
         wynik = 'X'
+        wynik_szcz= str(gole1) + wynik + str(gole2)
+        print(wynik_szcz)
         print(id, gole2, gole1)
         if (gole2 == None or gole1 == None):
             flash("You have to chose a date", category='error')
@@ -144,19 +149,20 @@ def dodaj_wynik():
             else:
                 wynik='X'
 
-            sql = update(Mecz).where(Mecz.id_meczu==id).values(wynik_meczu=wynik)
+            sql = update(Mecz).where(Mecz.id_meczu==id).values(wynik_meczu=wynik,dokladny_wynik=wynik_szcz)
             conn.execute(sql)
 
             return redirect(url_for('views.home_admin'))
 
-    return render_template("dod_wynik.html", user=current_user,Mecze=alll)
+    return render_template("dod_wynik.html", user=current_user,Mecze=alll,type=1)
 
 
 @dod_admin.route('/dodkurs', methods=['GET', 'POST'])
 def dodaj_kurs():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2).where(Mecz.data_meczu > date.today(),Mecz.wynik_meczu == None).order_by(Mecz.data_meczu)
     alll = conn.execute(sql).fetchall()
+
     if request.method == 'POST':
 
         kurs1 = request.form.get("kurs1")
@@ -174,6 +180,57 @@ def dodaj_kurs():
             conn.execute(sql)
             return redirect(url_for('views.home_admin'))
 
-    return render_template("dod_kurs.html", user=current_user,Mecze=alll)
+    return render_template("dod_kurs.html", user=current_user,Mecze=alll,type=1)
+
+'''
+@dod_admin.route('/zmkurs', methods=['GET', 'POST'])
+def edytuj_kurs(): #NIE DZIALA
+    conn = db.engine.connect()
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2,Kursy.Mecz_id_meczu,Kursy.kurs1,Kursy.kurs2,Kursy.kursx,Kursy.id_kursu,Kursy.data).join(Kursy).where(Mecz.wynik_meczu==None)
+    ligi = conn.execute(sql).fetchall()
+    print(ligi)
+
+    if request.method == 'POST':
+
+        kurs1 = request.form.get("kurs1")
+        kurs2 = request.form.get("kurs2")
+        kursx = request.form.get("kursx")
+        data = date.today()
+        # data=datetime.now()
+        id_meczu = request.form.get("game")
+        print(kurs1, kursx, kurs2, data, id_meczu)
+        if id_meczu == None:
+            flash("Musisz Wybrac mecz!", category='error')
+        else:
+            flash("Succes: Kurs zmieniony! ", category='success')
+            sql = update(Kursy).values(kurs1=kurs1, kurs2=kurs2, kursx=kursx, data=data, Mecz_id_meczu=id_meczu).where(Kursy.id_kursu == ligi[9])
+            conn.execute(sql)
+            return redirect(url_for('views.home_admin'))
+
+    return render_template("edit_kurs.html", user=current_user,Mecze=ligi)
+
+'''
+
+@dod_admin.route('/usunuzytkownika', methods=['GET', 'POST'])
+def usun_uzytkownika():
+    conn = db.engine.connect()
+    if request.method == 'POST':
+
+        email = request.form.get('email')
+        sql = select(Klient.id_user).where(Klient.email == email)
+        id_kli = conn.execute(sql).first()
+        if id_kli == None:
+            flash('Email nie istnieje',category='error')
+        else:
+            sql2 = select(Klient.email).where(Klient.email == email)
+            email = conn.execute(sql2).first()
+            email2 = 'BAN'+ str(email[0])
+            sql = update(Uzytkownik).values(email=email2).where(Uzytkownik.id_user == id_kli[0])
+            conn.execute(sql)
+            flash('Zbanowano uzytkownika',category='success')
+            return redirect(url_for('views.home_admin'))
+
+    return render_template("usun_uzytkownika.html", user=current_user, type=1)
+
 
 
