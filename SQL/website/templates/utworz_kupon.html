@@ -2,11 +2,7 @@
   <head>
     <title>Matches</title>
     <link rel="stylesheet" href="static/index.css">
-    <script>
-        function saveSelection(matchId, value) {
-          document.getElementById(matchId).value = value;
-        }
-      </script>
+   
     <style>
 
 body {
@@ -50,8 +46,7 @@ body {
         font-weight: bold;
         margin-bottom: 10px;
       }
-      form{
-      color: white;}
+     
       
       /* Center the boxes and stack them vertically*/
       /* .match-container {
@@ -97,18 +92,13 @@ body {
           <div class="team-name">{{match[2]}}</div>
           <div>Score: {{match[3]}}</div>
           <div class="Typ">
-            <label>
-              <input type="radio" name="{{ match[4] }}" value="1"
-              onclick="saveSelection(match[4], '1')">{{kursy[loop.index-1][0]}}
-            </label>
-            <label>
-              <input type="radio" name="{{ match[4] }}" value="X"
-              onclick="saveSelection({{ match[4] }}, '2')">{{kursy[loop.index-1][1]}}
-            </label>
-            <label>
-              <input type="radio" name="{{ match[4] }}" value="2"
-              onclick="saveSelection({{ match[4] }}, '3')">{{kursy[loop.index-1][2]}}
-            </label>
+            <label for="typ">Typ:</label>
+            <select id="typ" name="{{match[4]}}" onchange="saveSelection()">
+              <option value="0" >Brak</option>
+              <option value="1" >1</option>
+              <option value="X" >X</option>
+              <option value="2" >2</option>
+            </select>
           </div>
         </div>
       {% endfor %}

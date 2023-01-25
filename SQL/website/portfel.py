@@ -25,7 +25,7 @@ def home():
     sql = select(Portfel.id_portfela,Portfel.id_klienta,Portfel.stan).where(Portfel.id_klienta==current_user.id_user)
     conn = db.engine.connect()
     portfele = conn.execute(sql).fetchall()
-
+    
     button_tags=[]
     for i in range(1,len(portfele)+1):
         button_tags.append("Portfel"+str(i))

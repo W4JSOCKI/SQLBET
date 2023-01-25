@@ -1,0 +1,27 @@
+
+  {% extends "base.html" %}
+  {% block title %}Matches{% endblock %}
+  {% block content %}
+<table>
+    <thead>
+      <tr>
+        <th>Data zakończenia</th>
+        <th>Kwota</th>
+        <th>Kurs</th>
+        <th>Potencjalna wygrana</th>
+        <th>Stan</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for coupon in kupony %}
+      <tr>
+        <td>{{ coupon[1] }}</td>
+        <td>{{ coupon[2] }}</td>
+        <td>{{ coupon[3] }}</td>
+        <td>{{ coupon[4] }}</td>
+        <td>{{ coupon[5] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
