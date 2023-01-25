@@ -26,7 +26,7 @@ class Klient(Uzytkownik):
 
 
 class Kursy(db.Model):
-    id_kursu = db.Column(db.Integer,primary_key=True)
+    id_kursu = db.Column(db.Integer, primary_key=True)
     kurs1 = db.Column(db.Integer, nullable=False)
     kurs2 = db.Column(db.Integer, nullable=False)
     kursx = db.Column(db.Integer, nullable=False)
@@ -40,6 +40,7 @@ class Mecz(db.Model):
     dr1 = db.Column(db.String(80), nullable=False)
     dr2 = db.Column(db.String(80), nullable=False)
     wynik_meczu = db.Column(db.String(1))
+    dokladny_wynik = db.Column(db.String(10))
     kurs = db.relationship('Kursy')
     zaklad = db.relationship('Zaklad')
 
@@ -52,11 +53,11 @@ class Zaklad(db.Model):
 
 class Kupon(db.Model):
     id_kuponu = db.Column(db.Integer, primary_key=True)
-    data_zakonczenia = db.Column(db.Date, default=func.today(), nullable=False)
-    kwota = db.Column(db.Integer, nullable=False)
-    kurs = db.Column(db.Float, nullable=False)
-    potencjalna_wygrana = db.Column(db.Float, nullable=False)
-    stan = db.Column(db.String(20), nullable=False)
+    data_zakonczenia = db.Column(db.Date, default=func.today())
+    kwota = db.Column(db.Integer)
+    kurs = db.Column(db.Float)
+    potencjalna_wygrana = db.Column(db.Float)
+    stan = db.Column(db.String(20))
     Klient_id_user = db.Column(db.Integer, db.ForeignKey('uzytkownik.id_user'))
 
 class Portfel(db.Model):
