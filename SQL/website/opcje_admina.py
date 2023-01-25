@@ -64,6 +64,8 @@ def dodaj_mecz():
 
         if (data == None):
             flash("You have to chose a date", category='error')
+        elif (data == ""):
+            flash("You have to chose a date", category='error')
         elif(druzyna1 == None or druzyna2 == None):
             flash("You must select teams",category='error')
         elif (druzyna2 == druzyna1) :
