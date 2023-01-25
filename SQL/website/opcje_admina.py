@@ -1,6 +1,6 @@
 import sqlalchemy
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Admin, Mecz, Klient, Kursy
+from .models import Admin, Mecz, Klient, Kursy, Uzytkownik, Portfel, Wplata,Wyplata
 from werkzeug.security import generate_password_hash
 from . import db
 from SQL.files.Ligi_zespoly import *
@@ -51,7 +51,7 @@ def dodaj_admina():
             flash('Account created!', category='success')
             return redirect(url_for('views.home_admin'))
 
-    return render_template("sign_up_NEW_admin.html", user=current_user)
+    return render_template("sign_up_NEW_admin.html", user=current_user,type=1)
 
 
 @dod_admin.route('/dodmecz', methods=['GET', 'POST'])
@@ -67,6 +67,8 @@ def dodaj_mecz():
             flash("You have to chose a date", category='error')
         elif (data == ""):
             flash("You have to chose a date", category='error')
+        elif (data < ""):
+            flash("You have to chose a date", category='error')
         elif(druzyna1 == None or druzyna2 == None):
             flash("You must select teams",category='error')
         elif (druzyna2 == druzyna1) :
@@ -80,7 +82,7 @@ def dodaj_mecz():
             flash("Game added", category="success")
             return redirect(url_for('views.home_admin'))
 
-    return render_template("New_game.html", user=current_user,Ligi=Ligi)
+    return render_template("New_game.html", user=current_user,Ligi=Ligi,type=1)
 
 @dod_admin.route('/zmmecz', methods=['GET', 'POST'])
 def edytuj_mecz():
@@ -114,7 +116,7 @@ def edytuj_mecz():
             flash("Game changed", category="success")
             return redirect(url_for('views.home_admin'))
 
-    return render_template("edit_game.html", user=current_user,Ligi=Ligi,Mecze=ligi)
+    return render_template("edit_game.html", user=current_user,Ligi=Ligi,Mecze=ligi,type=1)
 
 
 @dod_admin.route('/zmwynik', methods=['GET', 'POST'])
@@ -150,7 +152,7 @@ def dodaj_wynik():
 
             return redirect(url_for('views.home_admin'))
 
-    return render_template("dod_wynik.html", user=current_user,Mecze=alll)
+    return render_template("dod_wynik.html", user=current_user,Mecze=alll,type=1)
 
 
 @dod_admin.route('/dodkurs', methods=['GET', 'POST'])
@@ -176,9 +178,9 @@ def dodaj_kurs():
             conn.execute(sql)
             return redirect(url_for('views.home_admin'))
 
-    return render_template("dod_kurs.html", user=current_user,Mecze=alll)
+    return render_template("dod_kurs.html", user=current_user,Mecze=alll,type=1)
 
-
+'''
 @dod_admin.route('/zmkurs', methods=['GET', 'POST'])
 def edytuj_kurs(): #NIE DZIALA
     conn = db.engine.connect()
@@ -204,3 +206,29 @@ def edytuj_kurs(): #NIE DZIALA
             return redirect(url_for('views.home_admin'))
 
     return render_template("edit_kurs.html", user=current_user,Mecze=ligi)
+
+'''
+
+@dod_admin.route('/usunuzytkownika', methods=['GET', 'POST'])
+def usun_uzytkownika():
+    conn = db.engine.connect()
+    if request.method == 'POST':
+
+        email = request.form.get('email')
+        sql = select(Klient.id_user).where(Klient.email == email)
+        id_kli = conn.execute(sql).first()
+        if id_kli == None:
+            flash('Email nie istnieje',category='error')
+        else:
+            sql2 = select(Klient.email).where(Klient.email == email)
+            email = conn.execute(sql2).first()
+            email2 = 'BAN'+ str(email[0])
+            sql = update(Uzytkownik).values(email=email2).where(Uzytkownik.id_user == id_kli[0])
+            conn.execute(sql)
+            flash('Zbanowano uzytkownika',category='success')
+            return redirect(url_for('views.home_admin'))
+
+    return render_template("usun_uzytkownika.html", user=current_user, type=1)
+
+
+
