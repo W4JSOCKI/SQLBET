@@ -23,7 +23,7 @@ content %}
   <label>Select Game:</label>
   <select id="id" name="game">
     {% for mecz in Mecze %}
-    <option value="{{ mecz[0]}}">{{ mecz }}</option>
+    <option value="{{ mecz[0]}}">{{ mecz[2] }}  {{ mecz[1] }}  {{ mecz[3] }}  {{ mecz[4] }}</option>
     {% endfor %}
   </select>
        <p>

@@ -1,9 +1,10 @@
+import sqlalchemy
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import Admin, Mecz, Klient, Kursy
 from werkzeug.security import generate_password_hash
 from . import db
 from SQL.files.Ligi_zespoly import *
-from sqlalchemy import select, update, insert, delete
+from sqlalchemy import select, update, insert, delete, null
 from flask_login import current_user
 from datetime import datetime,date
 
@@ -84,7 +85,7 @@ def dodaj_mecz():
 @dod_admin.route('/zmmecz', methods=['GET', 'POST'])
 def edytuj_mecz():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2,Mecz.wynik_meczu).where(Mecz.wynik_meczu==None)
     ligi = conn.execute(sql).fetchall()
     if request.method == 'POST':
 
@@ -170,8 +171,8 @@ def dodaj_kurs():
             flash("Musisz Wybrac mecz!",category='error')
         else:
             flash("Succes: Kurs dodany! ",category='success')
-            #sql= insert(Kursy).values(kurs1=kurs1,kurs2=kurs2,kursx=kursx,data=data,Mecz_id_meczu=id_meczu)
-            #conn.execute(sql)
+            sql= insert(Kursy).values(kurs1=kurs1,kurs2=kurs2,kursx=kursx,data=data,Mecz_id_meczu=id_meczu)
+            conn.execute(sql)
             return redirect(url_for('views.home_admin'))
 
     return render_template("dod_kurs.html", user=current_user,Mecze=alll)
