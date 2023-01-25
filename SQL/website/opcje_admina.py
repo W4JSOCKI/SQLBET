@@ -180,7 +180,7 @@ def dodaj_kurs():
 
 
 @dod_admin.route('/zmkurs', methods=['GET', 'POST'])
-def edytuj_kurs():
+def edytuj_kurs(): #NIE DZIALA
     conn = db.engine.connect()
     sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2,Kursy.Mecz_id_meczu,Kursy.kurs1,Kursy.kurs2,Kursy.kursx,Kursy.id_kursu,Kursy.data).join(Kursy).where(Mecz.wynik_meczu==None)
     ligi = conn.execute(sql).fetchall()
@@ -199,7 +199,7 @@ def edytuj_kurs():
             flash("Musisz Wybrac mecz!", category='error')
         else:
             flash("Succes: Kurs zmieniony! ", category='success')
-            sql = insert(Kursy).values(kurs1=kurs1, kurs2=kurs2, kursx=kursx, data=data, Mecz_id_meczu=id_meczu)
+            sql = update(Kursy).values(kurs1=kurs1, kurs2=kurs2, kursx=kursx, data=data, Mecz_id_meczu=id_meczu).where(Kursy.id_kursu == ligi[9])
             conn.execute(sql)
             return redirect(url_for('views.home_admin'))
 
