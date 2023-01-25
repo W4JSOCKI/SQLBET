@@ -87,7 +87,7 @@ def dodaj_mecz():
 @dod_admin.route('/zmmecz', methods=['GET', 'POST'])
 def edytuj_mecz():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2,Mecz.wynik_meczu).where(Mecz.wynik_meczu==None)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2,Mecz.wynik_meczu).where(Mecz.data_meczu > date.today(),Mecz.wynik_meczu == None).order_by(Mecz.data_meczu)
     ligi = conn.execute(sql).fetchall()
     if request.method == 'POST':
 
@@ -122,7 +122,7 @@ def edytuj_mecz():
 @dod_admin.route('/zmwynik', methods=['GET', 'POST'])
 def dodaj_wynik():
     conn = db.engine.connect()
-    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2).where(Mecz.data_meczu <= date.today(),Mecz.wynik_meczu == None).order_by(Mecz.data_meczu)
     alll = conn.execute(sql).fetchall()
     if request.method == 'POST':
 
@@ -130,6 +130,8 @@ def dodaj_wynik():
         gole1 = request.form.get('gole1',type=int)
         gole2 = request.form.get('gole2',type= int)
         wynik = 'X'
+        wynik_szcz= str(gole1) + wynik + str(gole2)
+        print(wynik_szcz)
         print(id, gole2, gole1)
         if (gole2 == None or gole1 == None):
             flash("You have to chose a date", category='error')
@@ -147,7 +149,7 @@ def dodaj_wynik():
             else:
                 wynik='X'
 
-            sql = update(Mecz).where(Mecz.id_meczu==id).values(wynik_meczu=wynik)
+            sql = update(Mecz).where(Mecz.id_meczu==id).values(wynik_meczu=wynik,dokladny_wynik=wynik_szcz)
             conn.execute(sql)
 
             return redirect(url_for('views.home_admin'))
