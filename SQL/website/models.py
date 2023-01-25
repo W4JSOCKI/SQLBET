@@ -1,6 +1,5 @@
 from . import db
 from flask_login import UserMixin
-from sqlalchemy.databases import oracle
 from sqlalchemy.sql import func
 from sqlalchemy import event
 
@@ -27,7 +26,10 @@ class Klient(Uzytkownik):
 
 
 class Kursy(db.Model):
-    kurs = db.Column(db.Integer, primary_key=True, nullable=False)
+    id_kursu = db.Column(db.Integer,primary_key=True)
+    kurs1 = db.Column(db.Integer, nullable=False)
+    kurs2 = db.Column(db.Integer, nullable=False)
+    kursx = db.Column(db.Integer, nullable=False)
     data = db.Column(db.Date, default=func.today(), nullable=False)
     Mecz_id_meczu = db.Column(db.Integer, db.ForeignKey('mecz.id_meczu'), nullable=False)
 

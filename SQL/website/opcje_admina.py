@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Admin,Mecz,Klient
+from .models import Admin, Mecz, Klient, Kursy
 from werkzeug.security import generate_password_hash
 from . import db
 from SQL.files.Ligi_zespoly import *
@@ -126,7 +126,7 @@ def dodaj_wynik():
         id = request.form.get("game")
         gole1 = request.form.get('gole1',type=int)
         gole2 = request.form.get('gole2',type= int)
-
+        wynik = 'X'
         print(id, gole2, gole1)
         if (gole2 == None or gole1 == None):
             flash("You have to chose a date", category='error')
@@ -134,18 +134,46 @@ def dodaj_wynik():
         else:
             conn = db.engine.connect()
             if gole2>gole1:
-                sql= update(Mecz).where(Mecz.wynik_meczu=="2")
-            elif gole1>gole2:
-                sql = update(Mecz).where(Mecz.wynik_meczu == "1")
-            else:
-                sql = update(Mecz).where(Mecz.wynik_meczu == "X")
+                print(gole2)
+                wynik='2'
 
-            print(id, gole2, gole1)
-            #sql = update(Mecz).values(Mecz.wynik).where(Mecz.id_meczu == id)
-            #conn.execute(sql)
+            elif gole1>gole2:
+                print(gole1)
+                wynik='1'
+
+            else:
+                wynik='X'
+
+            sql = update(Mecz).where(Mecz.id_meczu==id).values(wynik_meczu=wynik)
+            conn.execute(sql)
 
             return redirect(url_for('views.home_admin'))
 
-    return render_template("dod_wynik.html", user=current_user,Ligi=Ligi,Mecze=alll)
+    return render_template("dod_wynik.html", user=current_user,Mecze=alll)
+
+
+@dod_admin.route('/dodkurs', methods=['GET', 'POST'])
+def dodaj_kurs():
+    conn = db.engine.connect()
+    sql = select(Mecz.id_meczu, Mecz.liga, Mecz.data_meczu, Mecz.dr1, Mecz.dr2)
+    alll = conn.execute(sql).fetchall()
+    if request.method == 'POST':
+
+        kurs1 = request.form.get("kurs1")
+        kurs2 = request.form.get("kurs2")
+        kursx = request.form.get("kursx")
+        data = date.today()
+        #data=datetime.now()
+        id_meczu = request.form.get("game")
+        print(kurs1,kursx,kurs2,data,id_meczu)
+        if id_meczu == None:
+            flash("Musisz Wybrac mecz!",category='error')
+        else:
+            flash("Succes: Kurs dodany! ",category='success')
+            #sql= insert(Kursy).values(kurs1=kurs1,kurs2=kurs2,kursx=kursx,data=data,Mecz_id_meczu=id_meczu)
+            #conn.execute(sql)
+            return redirect(url_for('views.home_admin'))
+
+    return render_template("dod_kurs.html", user=current_user,Mecze=alll)
 
 
