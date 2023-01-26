@@ -21,6 +21,8 @@ def login():
         for e in emaile:
             if email in e[0]:
                 print(email)
+                if e[0] == email:
+                    break
                 flash('You have been banned!',category='error')
                 return redirect(url_for('auth.login'))
 

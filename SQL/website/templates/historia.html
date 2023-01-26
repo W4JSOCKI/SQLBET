@@ -1,0 +1,47 @@
+
+  {% extends "base.html" %}
+  {% block title %}Matches{% endblock %}
+  {% block content %}
+  <style>
+       body {
+      background-color: darkgreen;
+      background-image: url('static/robercik.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      color:white;
+
+    }
+
+    table{
+      color: white;
+    }
+    form{
+      color: white;}
+      h1{
+        color: white;
+      }
+    </style>
+<table>
+    <thead>
+      <tr>
+        <th>Data zakończenia</th>
+        <th>Kwota</th>
+        <th>Kurs</th>
+        <th>Potencjalna wygrana</th>
+        <th>Stan</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for coupon in kupony %}
+      <tr>
+        <td>{{ coupon[1] }}</td>
+        <td>{{ coupon[2] }}</td>
+        <td>{{ coupon[3] }}</td>
+        <td>{{ coupon[4] }}</td>
+        <td>{{ coupon[5] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
