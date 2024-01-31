@@ -70,7 +70,7 @@ body {
               {% for league in Ligi %}
               <option value="{{ league[0] }}" {% if cliga == league[0] %} selected {% endif %}>{{ league[0] }}</option>
               {% endfor %}
-              <option value="Wszystkie Ligi" {% if cliga == "Wszystkie Ligi" %} selected {% endif %}>"Wszystkie Ligi"</option>
+              <option value="Wszystkie Ligi" {% if cliga == "Wszystkie Ligi" %} selected {% endif %}>Wszystkie Ligi</option>
             </select>
       <label for="start">Od</label>
       <input type="date" id="start" value={{mdatemin}} name="match-date-min" min={{mindatehard}} max="2050-12-31">

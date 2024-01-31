@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for,Flask,request
 from flask_login import login_required, current_user
-from .models import Admin,Mecz,Klient,Kursy,Kupon,Zaklad,Portfel
+from .models import Admin,Mecz,Klient,Kursy,Kupon,Zaklad,Portfel,Wplata,Wyplata
 from . import db
 from files.Ligi_zespoly import *
 from sqlalchemy import select, update, insert, delete,distinct,between
@@ -133,22 +133,30 @@ def kupony_historia():
             return redirect(url_for('mecze.home'))
         potencjalna_wygrana=kwota*finalkurs
         sql=insert(Kupon).values(Klient_id_user=current_user.id_user,data_zakonczenia=enddate,kwota=kwota,kurs=finalkurs,
-        potencjalna_wygrana=potencjalna_wygrana, stan="Aktywny")
+        potencjalna_wygrana=potencjalna_wygrana, stan="Dodany")
         conn.execute(sql)
         sql=select(Kupon.id_kuponu).where(Kupon.Klient_id_user==current_user.id_user).order_by(Kupon.id_kuponu.desc()).limit(1)
         id_kuponu=conn.execute(sql).fetchone()
         for i in range(0,len(meczeid)):
-            sql=insert(Zaklad).values(Kupon_id_kuponu=id_kuponu[0],kurs=float(kursy[i][0]),Mecz_id_meczu=meczeid[i],typ=kursy[i][1])
+            sql=insert(Zaklad).values(Kupon_id_kuponu=id_kuponu[0],kurs=float(kursy[i][0]),Mecz_id_meczu=meczeid[i],typ=kursy[i][1],stan="Aktywny")
             conn.execute(sql)
         
         
     sql=update(Portfel).where(Portfel.id_portfela==pid).values(stan=Portfel.stan-kwota)
     conn.execute(sql)
+    sql=insert(Wyplata).values(Portfel_id_portfela=pid,kwota=kwota,czy_z_kuponu='T')
+    conn.execute(sql)
  
-    sql=select(Kupon.id_kuponu,Kupon.data_zakonczenia,Kupon.kwota,Kupon.kurs,Kupon.potencjalna_wygrana,Kupon.stan).where(Kupon.Klient_id_user==current_user.id_user)
-    kupony = conn.execute(sql).fetchall()
+    sql=select(Kupon.id_kuponu,Kupon.data_zakonczenia,Kupon.kwota,Kupon.kurs,Kupon.potencjalna_wygrana,Kupon.stan).where(Kupon.Klient_id_user==current_user.id_user).order_by(Kupon.id_kuponu.desc())
+    kupon = conn.execute(sql).fetchone()
+    print(kupon)
+    print(kupon[2])
+    z1="{:.2f}".format(kupon[2])
+    z2="{:.2f}".format(kupon[3])
+    z3="{:.2f}".format(kupon[4])
+    kupon=[kupon[0],kupon[1],z1,z2,z3,kupon[5]]
 
 
-    return render_template("historia_kuponów.html",user=current_user,type=0,kupony=kupony)
+    return render_template("historia_kuponów.html",user=current_user,type=0,coupon=kupon)
 
 

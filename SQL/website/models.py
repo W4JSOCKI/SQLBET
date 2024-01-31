@@ -2,6 +2,7 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 from sqlalchemy import event
+from datetime import datetime
 
 class Uzytkownik(db.Model,UserMixin):
     id_user = db.Column(db.Integer, primary_key=True)
@@ -50,6 +51,7 @@ class Zaklad(db.Model):
     typ = db.Column(db.String(1), nullable=False)
     Kupon_id_kuponu = db.Column(db.Integer, db.ForeignKey('kupon.id_kuponu'))
     Mecz_id_meczu = db.Column(db.Integer, db.ForeignKey('mecz.id_meczu'))
+    stan= db.Column(db.String(20))
 
 class Kupon(db.Model):
     id_kuponu = db.Column(db.Integer, primary_key=True)
@@ -70,7 +72,7 @@ class Portfel(db.Model):
 
 class Wplata(db.Model):
     id_wplaty = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Date, default=func.today(), nullable=False)
+    data = db.Column(db.Date, default=datetime.today(), nullable=False)
     kwota = db.Column(db.Float, nullable=False)
     czy_z_kuponu = db.Column(db.String(1), nullable=False)
     Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela', ondelete='CASCADE'))
@@ -78,7 +80,7 @@ class Wplata(db.Model):
 
 class Wyplata(db.Model):
     id_wypłaty = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Date, default=func.today(), nullable=False)
+    data = db.Column(db.Date, default=datetime.today(), nullable=False)
     kwota = db.Column(db.Float, nullable=False)
     czy_z_kuponu = db.Column(db.String(1), nullable=False)
     Portfel_id_portfela = db.Column(db.Integer, db.ForeignKey('portfel.id_portfela', ondelete='CASCADE'))

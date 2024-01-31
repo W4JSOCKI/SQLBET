@@ -1,9 +1,9 @@
 import sqlalchemy
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Admin, Mecz, Klient, Kursy, Uzytkownik, Portfel, Wplata,Wyplata
+from .models import Admin, Mecz, Klient, Kursy, Uzytkownik, Portfel, Wplata,Wyplata, Zaklad, Kupon
 from werkzeug.security import generate_password_hash
 from . import db
-from SQL.files.Ligi_zespoly import *
+from files.Ligi_zespoly import *
 from sqlalchemy import select, update, insert, delete, null
 from flask_login import current_user
 from datetime import datetime,date
@@ -134,7 +134,7 @@ def dodaj_wynik():
         print(wynik_szcz)
         print(id, gole2, gole1)
         if (gole2 == None or gole1 == None):
-            flash("You have to chose a date", category='error')
+            flash("Musisz wpisać liczbę bramek", category='error')
 
         else:
             conn = db.engine.connect()
@@ -151,9 +151,46 @@ def dodaj_wynik():
 
             sql = update(Mecz).where(Mecz.id_meczu==id).values(wynik_meczu=wynik,dokladny_wynik=wynik_szcz)
             conn.execute(sql)
+            flash("Game changed", category="success")
+            sql=select(Zaklad.id_zakladu,Zaklad.typ,Zaklad.Kupon_id_kuponu).where(Zaklad.Mecz_id_meczu==id)
+            id_zakladow=conn.execute(sql).fetchall()
+            for id_zakladu in id_zakladow:
+                if(wynik==id_zakladu[1]):
+                    sql = update(Zaklad).where(Zaklad.id_zakladu == id_zakladu[0]).values(stan='Wygrany')
+                    conn.execute(sql)
+                else:
+                    sql=update(Zaklad).where(Zaklad.id_zakladu == id_zakladu[0]).values(stan='Przegrany')
+                    conn.execute(sql)
+                sql=select(Zaklad.id_zakladu,Zaklad.stan,Zaklad.Kupon_id_kuponu).where(Zaklad.Kupon_id_kuponu==id_zakladu[2])
+                zaklady_na_kuponie=conn.execute(sql).fetchall()
 
+                sql=update(Kupon).where(Kupon.id_kuponu==id_zakladu[2]).values(stan='Wygrany')
+                conn.execute(sql)
+                sql=select(Kupon.Klient_id_user).where(Kupon.id_kuponu==id_zakladu[2])
+                id_klienta=conn.execute(sql).fetchone()
+                sql=select(Portfel.id_portfela).where(Portfel.Klient_id_user==id_klienta[0])
+                id_portfela=conn.execute(sql).fetchone()
+                
+                for zaklad in zaklady_na_kuponie:
+                    if(zaklad[1]=='Przegrany'):
+                        sql=update(Kupon).where(Kupon.id_kuponu==zaklad[2]).values(stan='Przegrany')
+                        conn.execute(sql)
+                        break
+                    elif(zaklad[1]=='Aktywny'):
+                        sql=update(Kupon).where(Kupon.id_kuponu==zaklad[2]).values(stan='Aktywny')
+                        conn.execute(sql)
+                        break
+                sql=select(Kupon.stan,Kupon.potencjalna_wygrana).where(Kupon.id_kuponu==zaklad[2])
+                stan_kuponu=conn.execute(sql).fetchone()
+                if(stan_kuponu[0]=='Wygrany'):
+                    sql=update(Portfel).where(Portfel.id_portfela==id_portfela).values(saldo=Portfel.saldo+stan_kuponu[1])
+                    conn.execute(sql)
+                    sql=insert(Wplata).values(Portfel_id_portfela=id_portfela,Data_wyplaty=date.today(),Kwota=stan_kuponu[1],czy_z_kuponu='T')
+
+            
             return redirect(url_for('views.home_admin'))
-
+        
+        
     return render_template("dod_wynik.html", user=current_user,Mecze=alll,type=1)
 
 
